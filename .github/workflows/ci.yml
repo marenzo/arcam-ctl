@@ -40,10 +40,10 @@ jobs:
         run: ./firmware/build.sh --clippy
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: arcam-radia-esp32-control
+          name: arcam-ctl
           path: |
-            dist/arcam-radia-esp32-control.bin
-            dist/arcam-radia-esp32-control-app.bin
+            dist/arcam-ctl.bin
+            dist/arcam-ctl-app.bin
             dist/firmware-notices.tar.gz
           if-no-files-found: error
 
@@ -82,9 +82,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh run download "$GITHUB_RUN_ID" --name arcam-radia-esp32-control --dir dist
+          gh run download "$GITHUB_RUN_ID" --name arcam-ctl --dir dist
           cd dist
-          assets=(arcam-radia-esp32-control.bin arcam-radia-esp32-control-app.bin firmware-notices.tar.gz)
+          assets=(arcam-ctl.bin arcam-ctl-app.bin firmware-notices.tar.gz)
           sha256sum "${assets[@]}" > SHA256SUMS
           # A re-run, or a release drafted by hand, gets its assets replaced.
           gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 ||

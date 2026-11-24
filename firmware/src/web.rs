@@ -109,8 +109,14 @@ pub fn start(
             Err((code, why)) => return reply(req, code, JSON, &error(&why)),
         };
         match change(&bridge, &store, &body) {
-            Ok(s) => {
-                let _ = events.send(Event::Reconnect);
+            Ok((s, broker)) => {
+                // A new broker needs a new connection; anything else only
+                // a fresh state (it carries the ceiling).
+                let _ = events.send(if broker {
+                    Event::Reconnect
+                } else {
+                    Event::State
+                });
                 reply(req, 200, JSON, &settings_json(&s))
             }
             Err(e) => reply(req, 400, JSON, &error(&e)),
@@ -226,8 +232,8 @@ fn settings_json(s: &Settings) -> String {
 
 /// The fields of a JSON or form body over the settings in force, checked
 /// whole, then kept and put in force. A form's empty password leaves the
-/// password as it is.
-fn change(bridge: &Bridge, store: &Mutex<Store>, body: &str) -> Result<Settings, String> {
+/// password as it is. Also whether the broker settings changed.
+fn change(bridge: &Bridge, store: &Mutex<Store>, body: &str) -> Result<(Settings, bool), String> {
     let (fields, form) = if body.trim_start().starts_with('{') {
         (json::fields(body).ok_or("not a flat JSON object")?, false)
     } else {
@@ -256,7 +262,11 @@ fn change(bridge: &Bridge, store: &Mutex<Store>, body: &str) -> Result<Settings,
     lock(store)
         .save(&s)
         .map_err(|e| format!("not saved: {e}"))?;
+    let broker = s.mqtt_host != current.mqtt_host
+        || s.mqtt_port != current.mqtt_port
+        || s.mqtt_user != current.mqtt_user
+        || s.mqtt_password != current.mqtt_password;
     *current = s.clone();
     log::info!("settings saved");
-    Ok(s)
+    Ok((s, broker))
 }

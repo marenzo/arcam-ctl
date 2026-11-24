@@ -261,5 +261,5 @@ Help is wanted on these:
 - Bluetooth selection while the amplifier is a Bluetooth sink.
 - **Other models and firmware versions**: model code, source numbering, and
   anything else that differs.
-  [Report one](https://github.com/marenzo/arcam-radia-esp32-control/issues/new?template=compatibility.yml).
+  [Report one](https://github.com/marenzo/arcam-ctl/issues/new?template=compatibility.yml).
 - **Ground hum** ([hardware.md](hardware.md#ground-hum)).

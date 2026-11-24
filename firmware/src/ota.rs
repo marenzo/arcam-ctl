@@ -3,7 +3,9 @@
 //!
 //! The body is the app image, streamed into the slot, verified, and set to
 //! boot next. Anything wrong aborts the update and leaves the running image
-//! as it is. With rollback on (`sdkconfig.defaults`) a new image boots once
+//! as it is: a body that is not an app image, one that does not verify, and
+//! an app of another project, which lacks [`MARK`] and might never confirm
+//! or take an update again. With rollback on (`sdkconfig.defaults`) a new image boots once
 //! unconfirmed; [`confirm`] marks it good once the network is up and the
 //! HTTP server serves, so that it can be updated again. A reset before that
 //! boots the previous slot.
@@ -21,6 +23,10 @@ use esp_idf_svc::sys;
 const MAGIC: u8 = 0xE9;
 /// The piece of the body read and written at a time.
 const CHUNK: usize = 4096;
+/// Bytes every image of this firmware carries, since it is this static: an
+/// upload without them is another project's app. Every Rust ESP-IDF app
+/// reports the same project name, `libespidf`, so that name cannot tell.
+static MARK: [u8; 28] = *b"arcam-ctl firmware, OTA mark";
 
 /// An update is being written, or one was and the restart is due.
 static BUSY: AtomicBool = AtomicBool::new(false);
@@ -127,21 +133,49 @@ fn write(body: &mut impl Read, len: Option<u64>) -> Result<(), String> {
         .initiate_update_with_known_size(len)
         .map_err(|e| format!("not started: {e}"))?;
     let mut done = 0;
+    let mut mark = Finder::default();
     loop {
         update
             .write(&buf[..n])
             .map_err(|e| format!("not written at byte {done}: {e}"))?;
+        mark.feed(&buf[..n]);
         done += n;
         if done == len {
             break;
         }
         n = fill(body, &mut buf[..CHUNK.min(len - done)])?;
     }
+    if !mark.found {
+        return Err("not an image of this firmware: send arcam-ctl-app.bin".into());
+    }
     update
         .complete()
         .map_err(|e| format!("the image does not verify: {e}"))?;
     log::info!("ota: {name} written; it boots next");
     Ok(())
+}
+
+/// Looks for [`MARK`] in a stream, across the pieces it comes in.
+#[derive(Default)]
+struct Finder {
+    found: bool,
+    /// The end of the last piece, which a mark may start in.
+    tail: Vec<u8>,
+}
+
+impl Finder {
+    fn feed(&mut self, piece: &[u8]) {
+        if self.found {
+            return;
+        }
+        // The static itself, not a copy the compiler may fold into code.
+        let mark: &[u8] = std::hint::black_box(&MARK);
+        let mut seen = std::mem::take(&mut self.tail);
+        seen.extend_from_slice(piece);
+        self.found = seen.windows(mark.len()).any(|w| w == mark);
+        let keep = seen.len().min(mark.len() - 1);
+        self.tail = seen.split_off(seen.len() - keep);
+    }
 }
 
 /// Fill `buf` from the body: a short body is an error.

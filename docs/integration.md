@@ -107,9 +107,9 @@ routers filter rebinding answers.
 | `GET /api/state` | the state JSON, with the diagnostics' fields |
 | `POST /api/command` | one command, `{"<key>": <value>}` with a key and value as on the `set/` topics, except `restart`, which is `POST /api/restart`; waits up to 15 s for the result. HTTP 202 and `status: pending` mean the accepted command may still execute. Avoid resending it. Check the amplifier state or MQTT result for the outcome |
 | `GET /api/settings` | `mqtt_host`, `mqtt_port`, `mqtt_user`, `mqtt_password_set`, `volume_max`, `poll`; never the password |
-| `POST /api/settings` | writable fields are `mqtt_host`, `mqtt_port`, `mqtt_user`, `mqtt_password`, `volume_max` and `poll`. Accepts a flat JSON object or form. Invalid or duplicate fields reject the whole update (400). Changing broker host, port or user clears the previous password unless a new password accompanies the change. A blank form password keeps the password for the same broker identity. An empty JSON password clears it |
+| `POST /api/settings` | writable fields are `mqtt_host`, `mqtt_port`, `mqtt_user`, `mqtt_password`, `volume_max` and `poll`. Accepts a flat JSON object or form. Invalid or duplicate fields reject the whole update (400). Changing broker host, port or user clears the previous password unless a new password accompanies the change. A blank form password keeps the password for the same broker identity. An empty JSON password clears it. The MQTT connection restarts only when the broker host, port, user or password changed |
 | `POST /api/restart` | restarts in 1 s, after the answer |
-| `POST /api/ota` | a firmware update: the body is the app image, the release's `arcam-radia-esp32-control-app.bin` (not the merged image). It is written to the app slot that is not running and checked; then the answer is `{"status":"ok","detail":"restarting"}` and the device restarts into it in 1 s. 400 with `{"error": ...}`: the body is empty, larger than the slot, not an app image (its first byte is not `0xE9`) or does not verify, and the running image is left as it is. 409: another update is running. The new image confirms itself once it is on the network and serving HTTP; if it resets before that, the device boots the previous one |
+| `POST /api/ota` | a firmware update: the body is the app image, the release's `arcam-ctl-app.bin` (not the merged image). It is written to the app slot that is not running and checked; then the answer is `{"status":"ok","detail":"restarting"}` and the device restarts into it in 1 s. 400 with `{"error": ...}`: the body is empty, larger than the slot, not an app image (its first byte is not `0xE9`), is another project's app (it lacks this firmware's mark) or does not verify, and the running image is left as it is. 409: another update is running. The new image confirms itself once it is on the network and serving HTTP; if it resets before that, the device boots the previous one |
 | `GET /metrics` | [metrics](#metrics) for Prometheus |
 
 ```sh
@@ -118,7 +118,7 @@ bridge=http://192.168.1.42
 curl "$bridge/api/state"
 curl -X POST "$bridge/api/command" -d '{"volume":40}'
 curl -X POST "$bridge/api/settings" -d '{"mqtt_host":"192.168.1.10","mqtt_user":"arcam","mqtt_password":"secret"}'
-curl -X POST "$bridge/api/ota" --data-binary @arcam-radia-esp32-control-app.bin
+curl -X POST "$bridge/api/ota" --data-binary @arcam-ctl-app.bin
 ```
 
 ## Metrics
@@ -222,6 +222,9 @@ unknown.
   one step can land above it. The next is refused. A level above the ceiling
   that was set at the amplifier stays until the next input change, or until
   someone lowers it.
+- The device answers one HTTP request at a time. While `POST /api/command`
+  waits for the amplifier, up to 15 s for a power-on, the page, the rest of
+  the API and `/metrics` wait too.
 - Pins are fixed in the firmware; another board may need a build
   ([hardware](hardware.md#wiring)).
 

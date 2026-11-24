@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Build the firmware in a container and write to dist/:
-#   arcam-radia-esp32-control.bin      the merged image (bootloader, partition
-#                                      table, app): flash it at 0x0 over USB
-#   arcam-radia-esp32-control-app.bin  the app image alone, for OTA
+#   arcam-ctl.bin      the merged image (bootloader, partition table, app):
+#                      flash it at 0x0 over USB
+#   arcam-ctl-app.bin  the app image alone, for OTA
 # Needs only Docker with BuildKit.
 #
 #   firmware/build.sh            # build
 #   firmware/build.sh --clippy   # clippy first, then build
 #   firmware/build.sh --qemu     # the QEMU images instead (emulator/README.md):
-#                                # arcam-radia-esp32-control-qemu.bin, 4 MB,
-#                                # and arcam-radia-esp32-control-qemu-app.bin
+#                                # arcam-ctl-qemu.bin, 4 MB,
+#                                # and arcam-ctl-qemu-app.bin
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -33,7 +33,7 @@ for lock in Cargo.lock components_esp32.lock; do
     rm -f "dist/$lock"
 done
 
-image=dist/arcam-radia-esp32-control
+image=dist/arcam-ctl
 [ "$qemu" = 1 ] && image=$image-qemu
 app=$(wc -c < "$image-app.bin" | tr -d " ")
 merged=$(wc -c < "$image.bin" | tr -d " ")

@@ -16,7 +16,7 @@ virtual-amp  ◄── UART1, TCP 5555 ──►  QEMU ESP32  ◄── MQTT ─
 
 | Service | What it is |
 |---|---|
-| `qemu` | Espressif's QEMU for the ESP32, booting `dist/arcam-radia-esp32-control-qemu.bin`. This is the release firmware built with the `qemu` feature: Wi-Fi is replaced by emulated Ethernet and Improv is left out. UART0 is the log. UART1, the jack, connects to `amp:5555`. The flash image is written in place, so settings persist across restarts |
+| `qemu` | Espressif's QEMU for the ESP32, booting `dist/arcam-ctl-qemu.bin`. This is the release firmware built with the `qemu` feature: Wi-Fi is replaced by emulated Ethernet and Improv is left out. UART0 is the log. UART1, the jack, connects to `amp:5555`. The flash image is written in place, so settings persist across restarts |
 | `amp` | `virtual-amp` (`src/`), the amplifier's side of the CONTROL jack, built on the core's command table |
 | `mosquitto` | a real broker, with anonymous access |
 | `homeassistant` | only with `--profile ha`, for a manual look |
@@ -116,7 +116,7 @@ amplifier has not been seen to do are not covered.
 ```sh
 firmware/build.sh --qemu
 mkdir -p target/emulator
-cp dist/arcam-radia-esp32-control-qemu.bin target/emulator/flash.bin   # resets this session's settings
+cp dist/arcam-ctl-qemu.bin target/emulator/flash.bin   # resets this session's settings
 docker compose -f emulator/compose.yml --profile ha up -d
 ```
 

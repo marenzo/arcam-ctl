@@ -7,8 +7,8 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-image=dist/arcam-radia-esp32-control-qemu.bin
-app=dist/arcam-radia-esp32-control-qemu-app.bin
+image=dist/arcam-ctl-qemu.bin
+app=dist/arcam-ctl-qemu-app.bin
 for f in "$image" "$app"; do
     [ -f "$f" ] || { echo "no $f: run firmware/build.sh --qemu" >&2; exit 2; }
 done
@@ -260,12 +260,22 @@ n=$(wc -l <"$results")
 pub -r -t "$base/set/volume" -m down
 within 20 more_than "$n" || true
 check "a retained volume step lands once" amp_is "volume=$((v - 1))"
-curl -fsS -m 10 -X POST "$http/api/settings" -d '{"mqtt_port":1883}' >/dev/null
+# A save that leaves the broker as it was keeps the connection.
+connects=$(metric arcam_mqtt_connects_total)
+curl -fsS -m 10 -X POST "$http/api/settings" -d '{"volume_max":60}' >/dev/null
+sleep 3
+check "a ceiling-only save keeps the MQTT connection" [ "$(metric arcam_mqtt_connects_total)" = "$connects" ]
+# Another broker login reconnects, and a connect clears retained commands.
+curl -fsS -m 10 -X POST "$http/api/settings" -d '{"mqtt_user":"reconnect"}' >/dev/null
 sleep 2
 check "the device is back on the broker" within 15 online
+check "a broker change reconnected" [ "$(metric arcam_mqtt_connects_total)" -gt "$connects" ]
 sleep 2
 check "the retained step is not delivered again" amp_is "volume=$((v - 1))"
 check "the retained step is cleared" [ -z "$(sub -C 1 -W 2 -t "$base/set/volume" || true)" ]
+curl -fsS -m 10 -X POST "$http/api/settings" -d '{"mqtt_user":""}' >/dev/null
+sleep 2
+check "the device is back on the broker as before" within 15 online
 
 echo "==> settings survive a reset"
 poll=mode=standby_safe,tick=1000,standby=5000,window=10,quiet=1260
@@ -326,6 +336,19 @@ cut=$(mktemp)
 head -c 300000 "$app" >"$cut"
 check "a cut app image is refused" [ "$(ota "@$cut")" = 400 ]
 rm -f "$cut"
+# The same app with its mark replaced: a valid image of another project.
+other=$(mktemp)
+python3 -I -c '
+import sys
+d = open(sys.argv[1], "rb").read()
+mark, other = b"arcam-ctl firmware, OTA mark", b"another project, its own app"
+assert len(mark) == len(other) and d.count(mark) == 1, d.count(mark)
+open(sys.argv[2], "wb").write(d.replace(mark, other))' "$app" "$other"
+refusal=$(curl -sS -m 120 -X POST "$http/api/ota" -H 'Content-Type: application/octet-stream' \
+    --data-binary "@$other" -w ' %{http_code}')
+check "an app image of another project is refused for its mark" \
+    grep -q 'not an image of this firmware.* 400$' <<<"$refusal"
+rm -f "$other"
 check "the device answers after the refused uploads" answers
 check "it still runs $was" [ "$(partition)" = "$was" ]
 # QEMU's warm reset can immediately reset the trial slot a second time

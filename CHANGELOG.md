@@ -4,6 +4,21 @@ Format: [Keep a Changelog](https://keepachangelog.com). Versions follow
 [Semantic Versioning](https://semver.org); before 1.0 anything may change,
 including MQTT topics and the REST API.
 
+## 0.1.2 (2026-11-24)
+
+### Changed
+
+- The repository is `marenzo/arcam-ctl`, and the release images are
+  `arcam-ctl.bin` (USB) and `arcam-ctl-app.bin` (OTA). GitHub redirects the
+  old repository address.
+- Saving settings restarts the MQTT connection only when the broker host,
+  port, user or password changed, so availability no longer flaps on every
+  save.
+- An OTA upload of another project's app image is refused: every image of
+  this firmware carries a mark the upload is checked for.
+- The integration guide notes that the device answers one HTTP request at a
+  time.
+
 ## 0.1.1 (2026-11-24)
 
 ### Changed

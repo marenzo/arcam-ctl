@@ -444,7 +444,7 @@ fn announce(client: &mut EspMqttClient<'static>, id: &str, base: &str) {
         format!(",\"configuration_url\":\"http://{ip}/\"")
     });
     let device = format!(
-        "\"device\":{{\"identifiers\":[\"{id}\"],\"name\":\"{id}\",\"manufacturer\":\"arcam-radia-esp32-control (unofficial)\",\"model\":\"Radia A25 bridge\",\"sw_version\":\"{}\"{url}}}",
+        "\"device\":{{\"identifiers\":[\"{id}\"],\"name\":\"{id}\",\"manufacturer\":\"arcam-ctl (unofficial)\",\"model\":\"Radia A25 bridge\",\"sw_version\":\"{}\"{url}}}",
         crate::VERSION
     );
     for (component, object, name, fields) in ENTITIES {

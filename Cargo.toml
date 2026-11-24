@@ -6,12 +6,12 @@ members = ["core", "emulator"]
 exclude = ["firmware"]
 
 [workspace.package]
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 # The ESP toolchain, the oldest that builds the core (in the firmware).
 rust-version = "1.95"
 license = "MIT"
-repository = "https://github.com/marenzo/arcam-radia-esp32-control"
+repository = "https://github.com/marenzo/arcam-ctl"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

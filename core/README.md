@@ -2,9 +2,9 @@
 
 [![crates.io](https://img.shields.io/crates/v/arcam-ctl.svg)](https://crates.io/crates/arcam-ctl)
 [![docs.rs](https://img.shields.io/docsrs/arcam-ctl)](https://docs.rs/arcam-ctl)
-[![CI](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml)
+[![CI](https://github.com/marenzo/arcam-ctl/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/marenzo/arcam-ctl/actions/workflows/ci.yml)
 [![no_std](https://img.shields.io/badge/no__std-yes-success.svg)](https://docs.rust-embedded.org/book/intro/no-std.html)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/marenzo/arcam-radia-esp32-control/blob/main/core/LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/marenzo/arcam-ctl/blob/main/core/LICENSE)
 
 A Rust library for the serial protocol of the Arcam Radia A25's CONTROL jack,
 the RJ12 port on the back that Arcam does not document. It is `no_std`, has
@@ -45,9 +45,9 @@ The crate documentation has the burst-mode loop that drives `link` from a
 Verified against a real A25 on firmware V1.34. Other Radia models and
 firmware versions are untested. The protocol, the evidence behind each
 claim and the open questions are in
-[docs/protocol.md](https://github.com/marenzo/arcam-radia-esp32-control/blob/main/docs/protocol.md).
+[docs/protocol.md](https://github.com/marenzo/arcam-ctl/blob/main/docs/protocol.md).
 The ESP32 firmware that uses this crate is in the same
-[repository](https://github.com/marenzo/arcam-radia-esp32-control).
+[repository](https://github.com/marenzo/arcam-ctl).
 
 ## License
 

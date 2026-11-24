@@ -70,8 +70,8 @@ firmware/build.sh --clippy  # production firmware in a container, fmt and clippy
 A change under `firmware/` needs the container build: the root checks do not
 compile it. The build writes to `dist/`:
 
-- `arcam-radia-esp32-control.bin`: the merged image, flashed at `0x0`;
-- `arcam-radia-esp32-control-app.bin`: the app image, for OTA;
+- `arcam-ctl.bin`: the merged image, flashed at `0x0`;
+- `arcam-ctl-app.bin`: the app image, for OTA;
 - `firmware-notices.tar.gz`: upstream license texts and a dependency
   inventory (`firmware/notices.py`).
 

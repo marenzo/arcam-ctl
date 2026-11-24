@@ -1,6 +1,6 @@
 # Arcam Radia ESP32 Control
 
-[![CI](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml)
+[![CI](https://github.com/marenzo/arcam-ctl/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/marenzo/arcam-ctl/actions/workflows/ci.yml)
 [![crates.io](https://img.shields.io/crates/v/arcam-ctl.svg)](https://crates.io/crates/arcam-ctl)
 [![docs.rs](https://img.shields.io/docsrs/arcam-ctl)](https://docs.rs/arcam-ctl)
 [![License: MIT and CC BY 4.0](https://img.shields.io/badge/license-MIT%20%2B%20CC%20BY%204.0-blue.svg)](#license)
@@ -114,23 +114,23 @@ block, plugged into the CONTROL jack and powered over USB-C.*
 
 Keep the board unplugged from the amp until step 4.
 
-1. **Get the firmware.** Download `arcam-radia-esp32-control.bin` from the
-   [latest release](https://github.com/marenzo/arcam-radia-esp32-control/releases/latest).
+1. **Get the firmware.** Download `arcam-ctl.bin` from the
+   [latest release](https://github.com/marenzo/arcam-ctl/releases/latest).
    `SHA256SUMS` next to it lets you check the download. If you'd rather build
    it yourself, you only need
    [Docker](https://docs.docker.com/get-docker/):
 
    ```sh
-   git clone https://github.com/marenzo/arcam-radia-esp32-control
-   cd arcam-radia-esp32-control
-   firmware/build.sh    # writes dist/arcam-radia-esp32-control.bin
+   git clone https://github.com/marenzo/arcam-ctl
+   cd arcam-ctl
+   firmware/build.sh    # writes dist/arcam-ctl.bin
    ```
 
    The first build downloads Espressif's toolchain and takes a while.
 2. **Flash it.** Write the `.bin` at offset `0x0` with
    [Espressif's browser flasher](https://espressif.github.io/esptool-js/)
    (desktop Chrome or Edge), or run
-   `espflash write-bin 0x0 arcam-radia-esp32-control.bin`. Close the flasher
+   `espflash write-bin 0x0 arcam-ctl.bin`. Close the flasher
    when it's done, because it keeps the USB port busy.
 3. **Join your Wi-Fi.** Open [Improv via Serial](https://www.improv-wifi.com/)
    in the same browser, pick the board and enter your network. It gives you
@@ -153,7 +153,7 @@ Keep the board unplugged from the amp until step 4.
    every entity, topic and API call, with an example automation that turns
    the amp on with the TV.
 
-**Updating:** upload `arcam-radia-esp32-control-app.bin` under **Update
+**Updating:** upload `arcam-ctl-app.bin` under **Update
 firmware** on the settings page. Wi-Fi and settings are kept. A new version
 confirms itself once it's back on the network. If the board resets before
 that, for example after a crash or a power cut, it boots the previous
@@ -200,7 +200,7 @@ on a real board, are still untested.
 
 Other Radia models probably use the same jack, but their inputs and details
 may differ. If you try one, please
-[send a compatibility report](https://github.com/marenzo/arcam-radia-esp32-control/issues/new?template=compatibility.yml),
+[send a compatibility report](https://github.com/marenzo/arcam-ctl/issues/new?template=compatibility.yml),
 whether it works or not. If you use an AI coding agent, the repository
 includes an `adapt-model` skill
 ([.claude/skills/adapt-model](.claude/skills/adapt-model/SKILL.md)). It walks

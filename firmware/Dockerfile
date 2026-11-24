@@ -44,7 +44,7 @@ RUN --mount=type=cache,target=/home/esp/.espressif,uid=1000,gid=1000 \
       . /home/esp/export-esp.sh; \
       export RUSTFLAGS="--cfg espidf_time64 -D warnings"; \
       lock=; [ -f Cargo.lock ] && lock=--locked; \
-      image=arcam-radia-esp32-control; pad=--skip-padding; \
+      image=arcam-ctl; pad=--skip-padding; \
       if [ "$QEMU" = 1 ]; then \
         lock="$lock --features qemu"; image=$image-qemu; pad=; \
         export ESP_IDF_SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.qemu" \
