@@ -4,7 +4,7 @@ Format: [Keep a Changelog](https://keepachangelog.com). Versions follow
 [Semantic Versioning](https://semver.org); before 1.0 anything may change,
 including MQTT topics and the REST API.
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-11-24)
 
 The first release.
 

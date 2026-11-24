@@ -109,9 +109,10 @@ parts list and wiring.
 
 Keep the board unplugged from the amp until step 4.
 
-1. **Get the firmware.** Download `arcam-radia-esp32-control.bin` from
-   [Releases](https://github.com/marenzo/arcam-radia-esp32-control/releases).
-   No release is published yet, so for now build it yourself. You only need
+1. **Get the firmware.** Download `arcam-radia-esp32-control.bin` from the
+   [latest release](https://github.com/marenzo/arcam-radia-esp32-control/releases/latest).
+   `SHA256SUMS` next to it lets you check the download. If you'd rather build
+   it yourself, you only need
    [Docker](https://docs.docker.com/get-docker/):
 
    ```sh
@@ -220,8 +221,7 @@ firmware, without guessing and without ever sending an unsafe command.
   end to end, with no hardware.
 - [core/](core/README.md): the protocol as a small, dependency-free Rust
   library, the `arcam-radia` crate.
-- [CHANGELOG.md](CHANGELOG.md): what changed in each release. Version 0.1.0
-  is in preparation.
+- [CHANGELOG.md](CHANGELOG.md): what changed in each release.
 
 ## License
 
