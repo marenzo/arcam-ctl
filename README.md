@@ -103,7 +103,10 @@ all the wiring it needs, and
 Any equivalent parts will do. The [hardware page](docs/hardware.md) has the
 parts list and wiring.
 
-![A generic RJ12 plug-to-screw-terminal adapter (rendering)](docs/wiring/adapter.jpg)
+![The bridge plugged into the CONTROL jack of an Arcam Radia A25](docs/wiring/installed.jpg)
+
+*My bridge on the A25: the Atom Lite and the RJ12 adapter taped into one
+block, plugged into the CONTROL jack and powered over USB-C.*
 
 ## Setup
 

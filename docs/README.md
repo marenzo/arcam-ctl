@@ -21,6 +21,7 @@ docs/
   wiring/
     guide.html      the 3D wiring guide (built into the firmware)
     adapter.html    the source of adapter.jpg, the adapter rendering
+    installed.jpg   a photo of the bridge on the maintainer's A25
     three-r128/     the vendored three.js viewer, MIT
   LICENSE           CC BY 4.0 for the docs and captures
 ```
