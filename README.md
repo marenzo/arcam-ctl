@@ -36,11 +36,11 @@ real thing as soon as someone touches the remote.
 On the back of the A25 there is a small RJ12 jack marked CONTROL. Arcam uses
 it to let its own CD player and streamer operate the amp. Arcam doesn't
 document it and, as far as I could find, nobody else had either. Arcam does
-publish the amplifier's firmware, though, so I worked out the protocol from
-it, for interoperability, and then tried the core commands on the real
-amplifier. The [protocol page](docs/protocol.md) marks which details were
-seen on the jack and which come only from the firmware. The jack speaks both
-ways: you send a command and the amp tells you its state.
+publish the amplifier's software (its firmware), though, so I worked out the
+protocol from it, for interoperability, and then tried the core commands on
+the real amplifier. The [protocol page](docs/protocol.md) marks which details
+were seen on the jack and which come only from Arcam's software. The jack
+speaks both ways: you send a command and the amp tells you its state.
 
 This repository is the result: firmware for an ESP32 that sits on that jack
 and gives the amp a small HTTP API. I use it over HTTP from my own system. For
@@ -171,7 +171,7 @@ version.
   ([polling](docs/integration.md#polling)).
 - **There's a volume ceiling,** 60 out of 99 by default, so a typo or a
   runaway automation can't blast your speakers. The amp itself has no limit.
-  The firmware suggests some inputs keep their own volume, so after an
+  Arcam's software suggests some inputs keep their own volume, so after an
   input change the bridge checks the level and turns it down to the ceiling
   if needed. A level set by hand at the amp is left alone until then. Change
   the ceiling on the settings page.
@@ -186,7 +186,7 @@ version.
 
 ## Does it work with my amp?
 
-| Amplifier | Firmware | |
+| Amplifier | Arcam software | |
 |---|---|---|
 | Radia A25 | V1.34 | works: my amplifier, with an Atom Lite and bare wire |
 | Radia A15, A5 and other Radia models | | unknown |
@@ -203,7 +203,7 @@ whether it works or not. If you use an AI coding agent, the repository
 includes an `adapt-model` skill
 ([.claude/skills/adapt-model](.claude/skills/adapt-model/SKILL.md)). It walks
 the agent through adding a model from a report, a capture or that model's
-firmware, without guessing and without ever sending an unsafe command.
+Arcam software, without guessing and without ever sending an unsafe command.
 
 ## Troubleshooting
 
@@ -230,6 +230,6 @@ firmware, without guessing and without ever sending an unsafe command.
 
 The code is [MIT](LICENSE). The documentation and captures are
 [CC BY 4.0](docs/LICENSE). The bundled 3D viewer has its own terms, listed
-there. This repository contains no Arcam firmware. Arcam and Radia are
+there. This repository contains no Arcam software. Arcam and Radia are
 trademarks of their respective owners. Their use here only describes
 compatibility.

@@ -1,9 +1,10 @@
 # CONTROL jack protocol
 
-The serial protocol of the Arcam Radia A25's RJ12 CONTROL jack, amplifier
-firmware V1.34. Arcam does not document it. It was recovered from Arcam's
-public firmware and checked on an A25. Other Radia models and firmware
-versions are unverified.
+The serial protocol of the Arcam Radia A25's RJ12 CONTROL jack, Arcam
+software V1.34. Arcam does not document it. It was recovered from Arcam's
+public software, the amplifier's firmware, and checked on an A25. Other
+Radia models and Arcam software versions are unverified. On this page,
+"firmware" always means Arcam's.
 
 The page has four parts: the [specification](#physical-layer), the
 [evidence](#evidence) behind it, [how it was found](#how-it-was-found) and

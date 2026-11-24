@@ -1,13 +1,13 @@
 name: Compatibility report
 description: How the bridge behaved with your amplifier, working or not.
-title: "Compatibility: <model> <firmware>"
+title: "Compatibility: <model> <Arcam software version>"
 labels: [compatibility]
 body:
   - type: markdown
     attributes:
       value: >-
         Redact SSIDs, private addresses, usernames, device identifiers and
-        credentials from logs. Do not attach the manufacturer's firmware.
+        credentials from logs. Do not attach Arcam's software.
   - type: input
     id: model
     attributes:
@@ -16,10 +16,10 @@ body:
     validations:
       required: true
   - type: input
-    id: firmware
+    id: arcam_software
     attributes:
-      label: Amplifier firmware
-      description: From the amplifier's menu.
+      label: Arcam software version
+      description: The amplifier's own software, from its menu, for example V1.34. Not this project's firmware.
     validations:
       required: true
   - type: textarea
