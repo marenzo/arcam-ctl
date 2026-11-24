@@ -1,0 +1,9 @@
+# The QEMU image's managed components (firmware/build.sh --qemu). They replace
+# Cargo.toml's list, so the MQTT client is here again. esp-idf-svc's OpenCores
+# Ethernet driver pairs it with the DP83848 PHY, which ESP-IDF 6 moved out of
+# its tree.
+[[extra_components]]
+remote_component = { name = "espressif/mqtt", version = "1.1.0" }
+
+[[extra_components]]
+remote_component = { name = "espressif/dp83848", version = "1.1.0" }

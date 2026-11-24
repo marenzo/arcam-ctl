@@ -1,0 +1,7 @@
+target/
+.embuild/
+dist/
+*.bin
+*.elf
+.DS_Store
+.claude/settings.local.json

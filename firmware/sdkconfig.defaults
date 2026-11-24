@@ -1,0 +1,25 @@
+# M5 Atom Lite: ESP32-PICO-D4, 4 MB flash.
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+# The image's partition table is partitions.csv, given to espflash when the
+# image is made (firmware/build.sh); the bootloader reads it from 0x8000.
+
+# Wi-Fi only.
+CONFIG_BT_ENABLED=n
+CONFIG_ESP_WIFI_SOFTAP_SUPPORT=n
+
+# 1 ms ticks: the hold after a request is timed in ms.
+CONFIG_FREERTOS_HZ=1000
+
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+
+# The console is UART0 at 115200, shared with Improv Serial: plain lines.
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
+CONFIG_LOG_COLORS=n
+
+# Browsers send long headers.
+CONFIG_HTTPD_MAX_REQ_HDR_LEN=1024
+
+# A new image from OTA boots once unconfirmed, and the bootloader returns to
+# the previous slot if it resets before the app confirms it (src/ota.rs).
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y

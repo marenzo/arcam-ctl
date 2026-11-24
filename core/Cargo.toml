@@ -1,0 +1,17 @@
+[package]
+name = "arcam-radia"
+description = "An unofficial, independent library for the serial protocol of the Arcam Radia A25's CONTROL jack: framing, command table, send policy and a burst-mode link. no_std, no dependencies."
+keywords = ["arcam", "amplifier", "rs232", "no-std", "protocol"]
+categories = ["embedded", "no-std", "hardware-support"]
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+documentation = "https://docs.rs/arcam-radia"
+# The tests read the A25 capture from ../docs; the package needs only src/.
+include = ["src/**/*.rs", "README.md", "LICENSE", "Cargo.toml"]
+
+[lints]
+workspace = true

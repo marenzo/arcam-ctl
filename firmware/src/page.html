@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>arcam-radia</title>
+<style>
+body{font:16px system-ui,sans-serif;max-width:32em;margin:1em auto;padding:0 1em;color:#222;background:#fff}
+td{padding:.2em 1em .2em 0}td:first-child{color:#666}
+label{display:block;margin:.7em 0 .2em}
+input{width:100%;box-sizing:border-box;padding:.4em;font:inherit}
+button{margin-top:1em;padding:.5em 1em;font:inherit}
+</style>
+</head>
+<body>
+<h1>arcam-radia</h1>
+<h2>Amplifier</h2>
+<p id="connection" role="status">Connecting…</p>
+<table id="state"></table>
+<button id="refresh">Refresh</button>
+<span id="result" role="status"></span>
+<h2>Settings</h2>
+<form id="f" method="post" action="/api/settings">
+<label>MQTT broker host or address<input name="mqtt_host"></label>
+<label>MQTT port<input name="mqtt_port" inputmode="numeric"></label>
+<label>MQTT user<input name="mqtt_user" autocomplete="off"></label>
+<label>MQTT password<input name="mqtt_password" type="password" autocomplete="new-password"></label>
+<label>Volume ceiling, 0 to 99<input name="volume_max" inputmode="numeric"></label>
+<label>Poll spec<input name="poll"></label>
+<button>Save</button>
+<p id="msg"></p>
+</form>
+<h2>Update firmware</h2>
+<form id="u">
+<label>The release's app image, arcam-radia-esp32-control-app.bin<input name="image" type="file" accept=".bin"></label>
+<button>Upload</button>
+<p id="umsg"></p>
+</form>
+<p><a href="/wiring">Wiring guide</a></p>
+<p><small>No authentication: keep this device on a trusted network.</small></p>
+<script>
+const $ = id => document.getElementById(id), f = $('f');
+let lastRead;
+async function state() {
+  try {
+    const response = await fetch('/api/state', {cache: 'no-store'});
+    if (!response.ok) throw Error(response.status);
+    const s = await response.json();
+    lastRead = new Date().toLocaleTimeString();
+    $('connection').textContent = 'Bridge reached at ' + lastRead + '. Amplifier values are from its last replies.';
+    $('state').replaceChildren(...Object.entries(s).map(([k, v]) => {
+      const tr = document.createElement('tr');
+      for (const t of [k, v === null ? 'unknown' : String(v)]) tr.insertCell().textContent = t;
+      return tr;
+    }));
+  } catch {
+    $('connection').textContent = lastRead ? 'Bridge unreachable. Showing readings from ' + lastRead + '.' : 'Bridge unreachable.';
+  }
+}
+async function settings() {
+  const s = await (await fetch('/api/settings')).json();
+  for (const k of ['mqtt_host', 'mqtt_port', 'mqtt_user', 'volume_max', 'poll']) f.elements[k].value = s[k];
+  f.elements.mqtt_password.value = '';
+  f.elements.mqtt_password.placeholder = s.mqtt_password_set ? 'Stored for this broker and user' : 'None';
+}
+f.onsubmit = async e => {
+  e.preventDefault();
+  try {
+    const r = await fetch('/api/settings', {method: 'POST', body: new URLSearchParams(new FormData(f))});
+    $('msg').textContent = r.ok ? 'Saved.' : (await r.json()).error;
+    if (r.ok) await settings();
+  } catch { $('msg').textContent = 'Connection lost. Reload to check saved settings.'; }
+};
+$('u').onsubmit = async e => {
+  e.preventDefault();
+  const file = $('u').elements.image.files[0];
+  if (!file) return;
+  $('umsg').textContent = 'Uploading...';
+  try {
+    const r = await fetch('/api/ota', {method: 'POST', body: file});
+    $('umsg').textContent = r.ok ? 'Updated; the device restarts.' : (await r.json()).error;
+  } catch {
+    $('umsg').textContent = 'Connection lost. Check the running firmware before retrying.';
+  }
+};
+$('refresh').onclick = async () => {
+  $('refresh').disabled = true;
+  try {
+    const r = await fetch('/api/command', {method: 'POST', body: '{"refresh":true}'});
+    const result = await r.json();
+    $('result').textContent = result.detail || (result.status === 'ok' ? 'Amplifier answered.' : result.status);
+    await state();
+  } catch { $('result').textContent = 'Could not read the refresh result.'; }
+  finally { $('refresh').disabled = false; }
+};
+state();
+settings().catch(() => { $('msg').textContent = 'Could not load settings. Reload to try again.'; });
+setInterval(state, 3000);
+</script>
+</body>
+</html>

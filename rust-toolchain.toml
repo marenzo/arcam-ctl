@@ -1,0 +1,6 @@
+[toolchain]
+channel = "1.100.0"
+components = ["rustfmt", "clippy"]
+# A bare-metal target: check.sh builds the core for it, so a use of
+# std fails the check.
+targets = ["thumbv7em-none-eabihf"]

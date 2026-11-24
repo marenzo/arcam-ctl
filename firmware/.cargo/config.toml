@@ -1,0 +1,15 @@
+[build]
+target = "xtensa-esp32-espidf"
+
+[target.xtensa-esp32-espidf]
+linker = "ldproxy"
+# ESP-IDF 5 and later have a 64-bit time_t.
+rustflags = ["--cfg", "espidf_time64"]
+
+[unstable]
+build-std = ["std", "panic_abort"]
+# std without its backtrace symbolizer, which a board cannot use.
+build-std-features = ["panic-unwind"]
+
+[env]
+ESP_IDF_VERSION = "v6.1"

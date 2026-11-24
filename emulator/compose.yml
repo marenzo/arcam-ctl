@@ -1,0 +1,49 @@
+# The emulator (emulator/README.md): the firmware's QEMU
+# image against the virtual amplifier and a real broker. emulator/test.sh runs
+# it; `--profile ha` adds Home Assistant for a manual look.
+name: arcam-radia-emulator
+
+x-emulator: &emulator
+  build:
+    context: ..
+    dockerfile: emulator/Dockerfile
+  image: arcam-radia-emulator
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.0.22@sha256:81a6193ae693942a3231cd3ac52875b02b7e3a19da671b2fb4b55cc874c5b279
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+
+  # The amplifier: UART on 5555, the test's control port on 5556.
+  amp:
+    <<: *emulator
+    command: virtual-amp
+    ports:
+      - 127.0.0.1:15556:5556
+
+  # The ESP32: UART0 is the log, UART1 the jack (a client of amp:5555), the
+  # network QEMU's user mode with the device's port 80 on 8080, the monitor
+  # on 4444. The flash image is written in place: settings persist in it.
+  qemu:
+    <<: *emulator
+    depends_on: [amp, mosquitto]
+    command: >-
+      qemu-system-xtensa -machine esp32 -display none
+      -drive file=/flash/flash.bin,if=mtd,format=raw
+      -nic user,model=open_eth,hostfwd=tcp::8080-:80
+      -serial file:/dev/stdout
+      -chardev socket,id=amp,host=amp,port=5555,reconnect-ms=1000 -serial chardev:amp
+      -monitor tcp:0.0.0.0:4444,server,nowait
+    volumes:
+      - ${EMULATOR_FLASH:-../target/emulator}:/flash
+    ports:
+      - 127.0.0.1:18080:8080
+      - 127.0.0.1:14444:4444
+
+  homeassistant:
+    profiles: [ha]
+    image: ghcr.io/home-assistant/home-assistant:2026.10.4@sha256:23f4dfbb69ce76315dbc4de7915504f1c2dcecd7ca2648113a493a385972e133
+    depends_on: [mosquitto]
+    ports:
+      - 127.0.0.1:18123:8123

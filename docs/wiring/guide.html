@@ -1,0 +1,1247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arcam Radia Wiring</title>
+<style>
+:root { color-scheme: light; box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+body { margin: 0; }
+[hidden] { display: none !important; }
+</style>
+<style>
+/* Layout: a bench you can turn, steps laid over it, then the wire list, the notes and the resistor. */
+:root {
+  --bg: #eceef0;
+  --panel: #ffffff;
+  --ink: #161a1d;
+  --muted: #58616a;
+  --line: #d2d7db;
+  --accent: #a4561f;
+  --row-on: #f4e6da;
+  --stage: #15181b;
+  --f-text: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --ov-bg: rgba(12, 14, 16, 0.8);
+  --ov-ink: #eef0f1;
+  --ov-line: rgba(255, 255, 255, 0.16);
+  --ov-on: #f0f1f2;
+  --ov-on-ink: #131517;
+  --ov-focus: #f0a86e;
+  --w-black: #1d1d1f;
+  --w-red: #c13230;
+  --w-yellow: #e2bb2c;
+  --w-white: #ecebe6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1113; --panel: #151a1d; --ink: #e6eaec; --muted: #98a2a9; --line: #283037;
+    --accent: #e8995e; --row-on: #2a2119; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1113; --panel: #151a1d; --ink: #e6eaec; --muted: #98a2a9; --line: #283037;
+  --accent: #e8995e; --row-on: #2a2119; color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--ink); }
+body { font: 400 15px/1.55 var(--f-text); -webkit-font-smoothing: antialiased; }
+.page {
+  max-width: 1180px; margin: 0 auto;
+  padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 22px;
+}
+.page > * { min-width: 0; }
+header { display: grid; gap: 8px; max-width: 72ch; }
+.eyebrow { font: 500 11.5px/1.35 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin: 0; }
+h1 { font: 700 clamp(28px, 4.2vw, 40px)/1.08 var(--f-text); letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+h2 { font: 600 17px/1.3 var(--f-text); margin: 0; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); font-size: 15.5px; }
+
+.stage {
+  position: relative; height: clamp(460px, 68vh, 760px);
+  border-radius: 10px; overflow: hidden; background: var(--stage);
+  border: 1px solid var(--line); touch-action: none;
+}
+.stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.stage canvas:active { cursor: grabbing; }
+.toolbar { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
+.toolbar button {
+  pointer-events: auto; font: 500 12.5px/1 var(--f-text); padding: 7px 11px; border-radius: 999px;
+  background: var(--ov-bg); color: var(--ov-ink); border: 1px solid var(--ov-line);
+  cursor: pointer; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+.toolbar button:hover { background: rgba(34, 38, 42, 0.92); }
+.toolbar button[aria-pressed="true"] { background: var(--ov-on); color: var(--ov-on-ink); border-color: var(--ov-on); }
+.toolbar .sep { flex: 1 1 auto; }
+.seg { display: inline-flex; gap: 0; pointer-events: auto; }
+.seg button:first-child { border-radius: 999px 0 0 999px; }
+.seg button:last-child { border-radius: 0 999px 999px 0; border-left: 0; }
+.toolbar button:focus-visible, .stepnav button:focus-visible { outline: 2px solid var(--ov-focus); outline-offset: 2px; }
+tr[data-link]:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.tag {
+  position: absolute; left: 0; top: 0; transform: translate(-50%, -100%);
+  font: 500 11px/1.25 var(--f-mono); color: var(--ov-ink); background: var(--ov-bg);
+  border: 1px solid var(--ov-line); padding: 2px 6px; border-radius: 4px; white-space: nowrap;
+}
+.tag.unit { font: 600 12.5px/1.25 var(--f-text); padding: 4px 9px; }
+.tag.unit small { font: 400 11px var(--f-text); opacity: 0.75; margin-left: 4px; }
+.tag.num { min-width: 18px; text-align: center; padding: 2px 4px; }
+.tag.nc { border-style: dashed; opacity: 0.8; }
+.tag.hot { background: var(--ov-on); color: var(--ov-on-ink); border-color: var(--ov-on); opacity: 1; }
+.tip {
+  position: absolute; left: 0; top: 0; max-width: min(320px, 80%); pointer-events: none;
+  font: 400 12.5px/1.4 var(--f-text); color: var(--ov-ink); background: rgba(10, 12, 14, 0.92);
+  border: 1px solid var(--ov-line); border-radius: 6px; padding: 8px 10px;
+}
+.tip b { font-weight: 600; display: block; }
+.tip .pins { font-family: var(--f-mono); font-size: 12px; display: block; margin: 2px 0 3px; }
+.fallback { position: absolute; inset: 0 0 auto; display: grid; place-items: center; padding: 72px 24px 24px; color: #dfe4e7; text-align: center; font-size: 14px; }
+.hint { margin: -12px 0 0; font-size: 12.5px; color: var(--muted); }
+
+.steps {
+  position: absolute; left: 12px; bottom: 12px; right: 12px; max-width: 640px; display: grid; gap: 8px;
+  padding: 10px 12px; border-radius: 10px; color: var(--ov-ink); background: rgba(10, 12, 14, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.14); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.stepnav { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.stepnav button {
+  font: 600 12.5px/1 var(--f-text); min-width: 30px; height: 30px; padding: 0 9px; border-radius: 999px; cursor: pointer;
+  color: var(--ov-ink); background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.stepnav button:hover { background: rgba(255, 255, 255, 0.15); }
+.stepnav button[aria-current="step"] { background: var(--ov-on); color: var(--ov-on-ink); border-color: var(--ov-on); }
+.stepnav .play { margin-left: auto; }
+.steptext { margin: 0; font-size: 13px; line-height: 1.45; min-height: 2.9em; }
+.steptext b { font-weight: 600; margin-right: 4px; }
+.steptext .opt { display: block; margin-top: 3px; color: #c9ced2; }
+
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 16px 10px; min-width: 0; display: grid; gap: 8px; }
+.card .note { margin: 0; color: var(--muted); font-size: 13.5px; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+th { text-align: left; font: 500 11px/1.3 var(--f-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+tr[data-link] { cursor: pointer; }
+tr[data-link]:hover td, tr[data-link].on td { background: var(--row-on); }
+td.term { font: 600 13px/1.4 var(--f-mono); white-space: nowrap; }
+td.pin { font-family: var(--f-mono); font-size: 12.5px; }
+td.wire { white-space: nowrap; }
+td.none { color: var(--muted); }
+.sw { display: inline-block; width: 11px; height: 11px; border-radius: 50%; background: var(--c); border: 1px solid rgba(127, 127, 127, 0.6); vertical-align: -1px; margin-right: 7px; }
+.warn { font-weight: 600; }
+
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 22px; align-items: start; }
+.notes { display: grid; gap: 10px; max-width: 78ch; min-width: 0; }
+.notes ul { margin: 0; padding-left: 18px; display: grid; gap: 7px; }
+.notes li::marker { color: var(--muted); }
+.notes p { margin: 0; }
+.figure { font-family: var(--f-mono); font-size: 0.92em; white-space: nowrap; }
+code, .mono { font-family: var(--f-mono); font-size: 0.92em; }
+footer { color: var(--muted); font-size: 12.5px; max-width: 78ch; }
+@media (max-width: 560px) {
+  .stage { height: 76vh; min-height: 500px; }
+  .toolbar { top: 8px; left: 8px; right: 8px; gap: 5px; }
+  .toolbar button { padding: 6px 8px; font-size: 11.5px; }
+  .steps { left: 8px; right: 8px; bottom: 8px; padding: 8px 10px; }
+  .stepnav button { min-width: 27px; height: 27px; padding: 0 7px; }
+  .steptext { font-size: 12.5px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <p class="eyebrow">arcam-radia-esp32-control · example build: M5Stack Atom Lite · RJ12 CONTROL jack</p>
+    <h1>Arcam Radia Wiring</h1>
+    <p class="lede">This is the experimental bench wiring that produced repeated replies on one A25. Terminal 4 exceeds the ESP32 input rating. Long-term reliability is unknown. With the adapter and any cable disconnected from both devices, establish which plug contacts reach which screw terminals before using the table. Stop if the mapping is uncertain.</p>
+  </header>
+
+  <section class="stage" id="view" aria-label="A 3D bench: an M5Stack Atom Lite, its Grove cable wired into an RJ12 screw-terminal adapter, and the adapter plugged into an amplifier's CONTROL jack">
+    <div class="labels" id="labels"></div>
+    <div class="toolbar" role="toolbar" aria-label="Views">
+      <button type="button" data-view="bench" aria-pressed="true">Whole bench</button>
+      <button type="button" data-view="atom" aria-pressed="false">Atom &amp; Grove</button>
+      <button type="button" data-view="terms" aria-pressed="false">Terminals</button>
+      <button type="button" data-view="amp" aria-pressed="false">Amplifier jack</button>
+      <span class="sep"></span>
+      <button type="button" id="pinlabels" aria-pressed="true">Pin labels</button>
+      <span class="seg" role="group" aria-label="Series resistor">
+        <button type="button" id="res-on" aria-pressed="false">With resistor</button>
+        <button type="button" id="res-off" aria-pressed="true">Without</button>
+      </span>
+    </div>
+    <div class="steps" id="steps">
+      <div class="stepnav" id="stepnav" role="group" aria-label="Wiring steps"></div>
+      <p class="steptext" id="steptext" aria-live="polite"></p>
+    </div>
+    <div class="tip" id="tip" hidden></div>
+    <div class="fallback" id="fallback" hidden>This view needs WebGL, which this browser did not give the page. The steps still read here, and the wire list below holds every connection.</div>
+  </section>
+  <p class="hint">Drag to turn, scroll or pinch to zoom, right-drag or two fingers to pan. Point at a wire or a row to trace it; click to keep it lit.</p>
+
+  <section class="card" aria-labelledby="wl">
+    <h2 id="wl">Wire list</h2>
+    <p class="note">Terminal numbers are the ones printed on the adapter. Point at a row to light its wire and terminal in the view.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th scope="col">Adapter terminal</th><th scope="col">Is on the amplifier</th><th scope="col">Grove wire</th><th scope="col">Atom Lite pin</th></tr></thead>
+        <tbody>
+          <tr data-link="t1" tabindex="0"><td class="term">1</td><td>no contact</td><td class="none">—</td><td class="none">—</td></tr>
+          <tr data-link="t2" tabindex="0"><td class="term">2</td><td>ground (same net as 5)</td><td class="none">— (leave empty)</td><td class="none">—</td></tr>
+          <tr data-link="t3" tabindex="0"><td class="term">3</td><td>the amplifier's RECEIVE (about 5 kΩ to ground)</td><td class="wire"><span class="sw" style="--c: var(--w-white)"></span>white</td><td class="pin">G32 (the bridge's TX)</td></tr>
+          <tr data-link="t4" tabindex="0"><td class="term">4</td><td>the amplifier's TRANSMIT</td><td class="wire"><span class="sw" style="--c: var(--w-yellow)"></span>yellow <span class="none">(optionally through the resistor)</span></td><td class="pin">G26 (the bridge's RX)</td></tr>
+          <tr data-link="t5" tabindex="0"><td class="term">5</td><td>ground</td><td class="wire"><span class="sw" style="--c: var(--w-black)"></span>black</td><td class="pin">GND</td></tr>
+          <tr data-link="t6" tabindex="0"><td class="term">6</td><td>no contact</td><td class="none">—</td><td class="none">—</td></tr>
+          <tr data-link="red" tabindex="0"><td class="term none">—</td><td class="none">—</td><td class="wire"><span class="sw" style="--c: var(--w-red)"></span>red (5 V)</td><td><span class="warn">taped off, NOT connected</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="cols">
+    <section class="notes" aria-labelledby="nt">
+      <h2 id="nt">Notes</h2>
+      <ul>
+        <li>The amplifier's jack is 6P4C: only the middle four contacts exist. They meet adapter terminals 2 to 5, so terminals 1 and 6 touch nothing.</li>
+        <li>The numbers here are the adapter's own printed numbers. Adapters differ, so check the numbers on yours before you wire it.</li>
+        <li>A photo of the genuine Arcam cable shows its wires reversed end to end. Count from the adapter, not from a cable.</li>
+        <li>Nobody has checked yet whether powering the Atom from a USB supply brings ground hum into the audio.</li>
+        <li>Never wire the red 5 V. Tape its end and leave it loose.</li>
+      </ul>
+    </section>
+    <section class="notes" aria-labelledby="rs">
+      <h2 id="rs">About the resistor</h2>
+      <p>The bench used bare wire. While the amplifier answers, terminal 4 swings to about ±5.4 V. The ESP32 input range is −0.3 to 3.6 V. Keeping replies short limits exposure time.</p>
+      <p>The resistor view illustrates a proposed variation. A 10 kΩ series resistor gives an estimated negative clamp current of about 0.5 mA. The project has no bench measurements for the 4.7–22 kΩ range or qualification of a protected interface.</p>
+    </section>
+  </div>
+
+  <footer>Every part on the bench is drawn from plain shapes at about its real size in millimetres; none is a product photo or a maker's design. The amplifier is a generic rear panel. Arcam, Radia and M5Stack are their owners' trademarks. This page is not made or endorsed by them.</footer>
+</div>
+
+<script src="three-r128/three.min.js"></script>
+<script src="three-r128/OrbitControls.js"></script>
+<script>
+(function () {
+'use strict';
+const view = document.getElementById('view');
+const labelsEl = document.getElementById('labels');
+const tipEl = document.getElementById('tip');
+const stepNav = document.getElementById('stepnav');
+const stepText = document.getElementById('steptext');
+const rowEls = Array.prototype.slice.call(document.querySelectorAll('tr[data-link]'));
+const mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+let reduced = !!(mq && mq.matches);
+if (mq && mq.addEventListener) mq.addEventListener('change', function (e) { reduced = e.matches; });
+
+const LINKS = {
+  t1: { title: 'Terminal 1', pins: 'no contact', what: 'The amplifier has no contact here. Leave it empty.' },
+  t2: { title: 'Terminal 2', pins: 'ground (same net as 5)', what: 'Leave it empty: one ground wire, on terminal 5, is enough.' },
+  t3: { title: 'White wire', pins: 'G32 → terminal 3', what: 'The bridge transmits on G32 into the amplifier\'s RECEIVE (about 5 kΩ to ground).' },
+  t4: { title: 'Yellow wire', pins: 'terminal 4 → G26', what: 'The amplifier\'s TRANSMIT into the bridge\'s receive on G26, optionally through the 10 kΩ resistor.' },
+  t5: { title: 'Black wire', pins: 'GND → terminal 5', what: 'Ground.' },
+  t6: { title: 'Terminal 6', pins: 'no contact', what: 'The amplifier has no contact here. Leave it empty.' },
+  red: { title: 'Red wire', pins: '5 V', what: 'Taped off and NOT connected.' }
+};
+let resOn = false;
+const STEPS = [
+  { t: 'The parts', v: 'bench', b: function () { return 'First map the disconnected adapter and cable end to end. The reference parts are an M5Stack Atom Lite, a Grove cable, an RJ12 screw-terminal adapter, an optional 10 kΩ ¼ W resistor, a USB-C cable with a 5 V supply, and a small flat screwdriver.'; } },
+  { t: 'Prepare the cable', v: 'cable', b: function () { return 'Cut one connector off the Grove cable and strip about 5 mm from the end of each wire. Tape off the red 5 V wire. It is not used.'; } },
+  { t: 'Black to terminal 5', v: 'terms', b: function () { return 'Loosen screw 5, push the bare black end in and tighten. Terminal 5 is the amplifier\'s ground.'; } },
+  { t: 'White to terminal 3', v: 'terms', b: function () { return 'The white wire carries G32, the bridge\'s transmit, into the amplifier\'s receive on terminal 3.'; } },
+  { t: 'Yellow to terminal 4', v: 'terms', b: function () {
+    return 'The yellow wire brings the amplifier\'s transmit on terminal 4 to G26, the bridge\'s receive.' +
+      (resOn ? '<span class="opt">With the resistor: twist one lead onto the yellow wire, slide heat-shrink over the joint and the resistor, and clamp the other lead in terminal 4.</span>'
+             : '<span class="opt">Optional: a 10 kΩ resistor in series, under heat-shrink. Choose With resistor above to see it.</span>');
+  } },
+  { t: 'Check', v: 'terms', b: function () { return 'Terminals 1, 2 and 6 stay empty. Tighten every screw and tug each wire gently; none should move.'; } },
+  { t: 'Grove into the Atom', v: 'atom', b: function () { return 'Push the Grove connector into the Atom Lite\'s Grove socket until it seats.'; } },
+  { t: 'RJ12 into CONTROL', v: 'amp', b: function () { return 'Plug the adapter\'s RJ12 into the amplifier\'s CONTROL jack. Disconnect power while assembling the bench.'; } },
+  { t: 'Power', v: 'bench', b: function () { return 'Power the Atom from any 5 V USB supply through its USB-C port. The firmware is flashed beforehand, over the same USB port (the project\'s README).'; } }
+];
+const NSTEP = STEPS.length;
+let stepK = NSTEP, playing = false, playTimer = 0, pinned = null;
+let S = null;
+
+/* ---------- the step navigator ---------- */
+function mkBtn(text, label, cls) {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = text;
+  if (label) b.setAttribute('aria-label', label);
+  if (cls) b.className = cls;
+  stepNav.appendChild(b); return b;
+}
+mkBtn('‹', 'Previous step').addEventListener('click', function () { setPlaying(false); setStep(Math.max(1, stepK - 1), true); });
+STEPS.forEach(function (s, i) {
+  const b = mkBtn(String(i + 1), 'Step ' + (i + 1) + ': ' + s.t);
+  b.dataset.k = String(i + 1);
+  b.addEventListener('click', function () { setPlaying(false); setStep(i + 1, true); });
+});
+mkBtn('›', 'Next step').addEventListener('click', function () { setPlaying(false); setStep(Math.min(NSTEP, stepK + 1), true); });
+const playBtn = mkBtn('Play all', null, 'play');
+playBtn.addEventListener('click', function () {
+  if (playing) { setPlaying(false); return; }
+  setPlaying(true); setStep(1, true);
+  if (!S || reduced) queueNext(3800);
+});
+function queueNext(ms) {
+  clearTimeout(playTimer);
+  playTimer = setTimeout(function () {
+    if (!playing) return;
+    if (stepK < NSTEP) { setStep(stepK + 1, true); if (!S || reduced) queueNext(3800); }
+    else setPlaying(false);
+  }, ms);
+}
+function setPlaying(on) {
+  playing = on; clearTimeout(playTimer);
+  playBtn.textContent = on ? 'Stop' : 'Play all';
+  playBtn.setAttribute('aria-pressed', String(on));
+}
+setPlaying(false);
+function renderStepText() {
+  const s = STEPS[stepK - 1];
+  stepText.innerHTML = '<b>' + stepK + '. ' + s.t + '.</b>' + s.b();
+}
+function setStep(k, animate) {
+  stepK = k;
+  stepNav.querySelectorAll('[data-k]').forEach(function (b) {
+    if (+b.dataset.k === k) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+  });
+  renderStepText();
+  if (S) S.setStep(k, animate && !reduced);
+}
+
+/* ---------- rows and tracing ---------- */
+const markRows = function (id) { rowEls.forEach(function (tr) { tr.classList.toggle('on', tr.dataset.link === id); }); };
+function highlight(id) { markRows(id); if (S) S.highlight(id); }
+rowEls.forEach(function (tr) {
+  const id = tr.dataset.link;
+  tr.addEventListener('mouseenter', function () { highlight(id); });
+  tr.addEventListener('mouseleave', function () { highlight(pinned); });
+  const toggle = function () { pinned = pinned === id ? null : id; highlight(pinned); };
+  tr.addEventListener('click', toggle);
+  tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+});
+
+/* ---------- toolbar ---------- */
+const resOnBtn = document.getElementById('res-on'), resOffBtn = document.getElementById('res-off');
+function setRes(on) {
+  resOn = on;
+  resOnBtn.setAttribute('aria-pressed', String(on)); resOffBtn.setAttribute('aria-pressed', String(!on));
+  renderStepText();
+  if (S) S.setRes();
+}
+resOnBtn.addEventListener('click', function () { setRes(true); });
+resOffBtn.addEventListener('click', function () { setRes(false); });
+let pinLabels = window.innerWidth > 560;
+const pinBtn = document.getElementById('pinlabels');
+pinBtn.setAttribute('aria-pressed', String(pinLabels));
+pinBtn.addEventListener('click', function () { pinLabels = !pinLabels; pinBtn.setAttribute('aria-pressed', String(pinLabels)); if (S) S.dirty(); });
+document.querySelectorAll('[data-view]').forEach(function (b) {
+  b.addEventListener('click', function () { if (S) S.go(b.dataset.view); });
+});
+
+function noGL() {
+  document.getElementById('fallback').hidden = false;
+  document.querySelector('.toolbar').hidden = true;
+  view.style.height = 'auto'; view.style.minHeight = '300px';
+  document.getElementById('steps').style.position = 'relative';
+  document.getElementById('steps').style.margin = '150px 12px 12px';
+}
+
+/* ======================= the 3D bench ======================= */
+function init() {
+  if (typeof THREE === 'undefined' || !THREE.OrbitControls) return null;
+  let renderer;
+  try {
+    const probe = document.createElement('canvas');
+    if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) return null;
+    renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+  } catch (e) { return null; }
+
+  const V = function (x, y, z) { return new THREE.Vector3(x || 0, y || 0, z || 0); };
+  const UP = V(0, 1, 0);
+  const lin = function (c) { return new THREE.Color(c).convertSRGBToLinear(); };
+  const clamp01 = function (x) { return Math.min(1, Math.max(0, x)); };
+  const ease = function (k) { return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
+
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  view.insertBefore(renderer.domElement, labelsEl);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#15181b');
+  scene.fog = new THREE.Fog('#15181b', 520, 1200);
+  const camera = new THREE.PerspectiveCamera(30, 1, 1, 4000);
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.dampingFactor = 0.09;
+  controls.minDistance = 28; controls.maxDistance = 650;
+  controls.maxPolarAngle = THREE.MathUtils.degToRad(86);
+
+  /* a soft studio for reflections: a dim room, one big softbox overhead and two strips */
+  (function () {
+    const pm = new THREE.PMREMGenerator(renderer);
+    const s = new THREE.Scene();
+    s.add(new THREE.Mesh(new THREE.BoxGeometry(200, 200, 200), new THREE.MeshBasicMaterial({ color: 0x15181b, side: THREE.BackSide })));
+    const panel = function (w, h, p, k, tint) {
+      const c = new THREE.Color(k, k * (tint || 1), k * (tint ? 1 / tint : 1));
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: c, side: THREE.DoubleSide }));
+      m.position.copy(p); m.lookAt(0, 0, 0); s.add(m);
+    };
+    panel(120, 70, V(0, 92, 20), 2.8);
+    panel(30, 110, V(-92, 30, 20), 1.2, 0.97);
+    panel(30, 110, V(92, 40, -20), 0.9, 1.02);
+    panel(140, 18, V(0, 20, 96), 0.6);
+    scene.environment = pm.fromScene(s, 0.04, 0.1, 400).texture;
+    pm.dispose();
+  })();
+
+  scene.add(new THREE.HemisphereLight(0xeaf0ff, 0x2a2620, 0.25));
+  const sun = new THREE.DirectionalLight(0xfff3e4, 1.5);
+  sun.position.set(-110, 260, 170);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  Object.assign(sun.shadow.camera, { left: -170, right: 170, top: 170, bottom: -170, near: 30, far: 800 });
+  sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; sun.shadow.radius = 3;
+  scene.add(sun); scene.add(sun.target);
+  const rim = new THREE.DirectionalLight(0xd8e4ff, 0.55);
+  rim.position.set(170, 110, -200); scene.add(rim);
+
+  /* ---------- materials ---------- */
+  const std = function (o) { if (o.color !== undefined) o.color = lin(o.color); return new THREE.MeshStandardMaterial(o); };
+  const phys = function (o) { if (o.color !== undefined) o.color = lin(o.color); return new THREE.MeshPhysicalMaterial(o); };
+  const M = {
+    abs: phys({ color: '#34373b', roughness: 0.55, clearcoat: 0.15, clearcoatRoughness: 0.6 }),
+    btn: phys({ color: '#d4d8db', roughness: 0.38, clearcoat: 0.5, clearcoatRoughness: 0.25, transparent: true, opacity: 0.94 }),
+    nylon: std({ color: '#ece5d3', roughness: 0.55 }),
+    black: std({ color: '#101112', roughness: 0.6 }),
+    hole: std({ color: '#060707', roughness: 0.9 }),
+    steel: std({ color: '#c9ccd0', metalness: 1, roughness: 0.28 }),
+    nickel: std({ color: '#d8dadc', metalness: 1, roughness: 0.2 }),
+    gold: std({ color: '#d8ab58', metalness: 1, roughness: 0.22 }),
+    copper: std({ color: '#c97b4a', metalness: 1, roughness: 0.32 }),
+    tin: std({ color: '#c7c9cb', metalness: 0.95, roughness: 0.33 }),
+    term: std({ color: '#2f9150', roughness: 0.48 }),
+    fr4: std({ color: '#2b2d24', roughness: 0.7 }),
+    standoff: std({ color: '#1a1b1c', roughness: 0.5 }),
+    clear: phys({ color: '#f3f6f8', roughness: 0.06, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.05, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide }),
+    glue: phys({ color: '#f1efe6', roughness: 0.2, transparent: true, opacity: 0.55, depthWrite: false }),
+    satin: std({ color: '#b9bcc0', roughness: 0.5 }),
+    usb: std({ color: '#1a1b1d', roughness: 0.55 }),
+    overmold: std({ color: '#202124', roughness: 0.45 }),
+    brick: phys({ color: '#e8e7e3', roughness: 0.55, clearcoat: 0.2, clearcoatRoughness: 0.5 }),
+    tape: std({ color: '#131315', roughness: 0.38 }),
+    shrink: phys({ color: '#e9eef1', roughness: 0.3, transparent: true, opacity: 0.38, depthWrite: false, clearcoat: 0.6 }),
+    ampBody: std({ color: '#1b1c1e', metalness: 0.5, roughness: 0.42 }),
+    rubber: std({ color: '#0c0c0d', roughness: 0.85 }),
+    chrome: std({ color: '#dfe1e3', metalness: 1, roughness: 0.12 }),
+    darkScrew: std({ color: '#2b2c2e', metalness: 0.9, roughness: 0.35 }),
+    insRed: std({ color: '#b82a28', roughness: 0.5 }),
+    insWhite: std({ color: '#ecebe6', roughness: 0.5 }),
+    handle: phys({ color: '#b44e28', roughness: 0.42, clearcoat: 0.4, clearcoatRoughness: 0.4 }),
+    cap: std({ color: '#2d3033', roughness: 0.4, metalness: 0.2 })
+  };
+  const WIRE_HEX = ['#1d1d1f', '#c13230', '#e2bb2c', '#ecebe6'];
+  const SAT = ['#ecebe6', '#1d1d1f', '#c13230', '#3c8f4a', '#e2bb2c', '#2f62b8'];
+
+  function canvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+  function tex(c, srgb) {
+    const t = new THREE.CanvasTexture(c);
+    if (srgb !== false) t.encoding = THREE.sRGBEncoding;
+    t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    return t;
+  }
+  function noise(g, w, h, amp) {
+    const d = g.getImageData(0, 0, w, h), a = d.data;
+    for (let i = 0; i < a.length; i += 4) { const n = (Math.random() - 0.5) * amp; a[i] += n; a[i + 1] += n; a[i + 2] += n; }
+    g.putImageData(d, 0, 0);
+  }
+
+  /* ---------- geometry helpers ---------- */
+  function rbox(w, h, d, r, bev) {
+    bev = Math.max(0, Math.min(bev || 0, h / 2 - 0.02, w / 2 - 0.02, d / 2 - 0.02));
+    const iw = w - 2 * bev, id = d - 2 * bev;
+    const rr = Math.max(0.04, Math.min((r || 0) - bev, iw / 2 - 0.01, id / 2 - 0.01));
+    const x0 = -iw / 2, y0 = -id / 2, s = new THREE.Shape();
+    s.moveTo(x0 + rr, y0); s.lineTo(x0 + iw - rr, y0); s.quadraticCurveTo(x0 + iw, y0, x0 + iw, y0 + rr);
+    s.lineTo(x0 + iw, y0 + id - rr); s.quadraticCurveTo(x0 + iw, y0 + id, x0 + iw - rr, y0 + id);
+    s.lineTo(x0 + rr, y0 + id); s.quadraticCurveTo(x0, y0 + id, x0, y0 + id - rr);
+    s.lineTo(x0, y0 + rr); s.quadraticCurveTo(x0, y0, x0 + rr, y0);
+    const depth = Math.max(0.01, h - 2 * bev);
+    const g = new THREE.ExtrudeGeometry(s, { depth: depth, bevelEnabled: bev > 0, bevelThickness: bev, bevelSize: bev, bevelSegments: 3, curveSegments: 5 });
+    g.translate(0, 0, -depth / 2); g.rotateX(-Math.PI / 2);
+    return g;
+  }
+  function mesh(geo, mat, parent, x, y, z, noShadow) {
+    const m = new THREE.Mesh(geo, mat);
+    m.position.set(x || 0, y || 0, z || 0);
+    if (!noShadow) { m.castShadow = true; m.receiveShadow = true; }
+    (parent || scene).add(m); return m;
+  }
+  function group(parent, x, y, z) { const g = new THREE.Group(); g.position.set(x || 0, y || 0, z || 0); (parent || scene).add(g); return g; }
+  function cyl(r, len, mat, parent, seg) {
+    const g = new THREE.CylinderGeometry(r, r, len, seg || 16); g.rotateX(Math.PI / 2);
+    return mesh(g, mat, parent);
+  }
+  /* a tube swept along a curve with an elliptical section; the wide side stays level (flat leads) */
+  function sweep(points, a, b, radial) {
+    const curve = new THREE.CatmullRomCurve3(points, false, 'centripetal');
+    const L = curve.getLength(), n = Math.max(10, Math.ceil(L / 1.1));
+    const pts = curve.getSpacedPoints(n);
+    const pos = new Float32Array((n + 1) * radial * 3), nor = new Float32Array((n + 1) * radial * 3), idx = [];
+    let prev = null; const t = V(), side = V(), up = V(), p = V(), q = V();
+    for (let k = 0; k <= n; k++) {
+      t.subVectors(pts[Math.min(n, k + 1)], pts[Math.max(0, k - 1)]).normalize();
+      side.crossVectors(t, UP);
+      if (side.lengthSq() < 1e-4) side.copy(prev || V(1, 0, 0)); else side.normalize();
+      if (prev && side.dot(prev) < 0) side.negate();
+      prev = side.clone();
+      up.crossVectors(side, t).normalize();
+      for (let j = 0; j < radial; j++) {
+        const th = j / radial * Math.PI * 2, c = Math.cos(th), s = Math.sin(th);
+        p.copy(pts[k]).addScaledVector(side, c * a).addScaledVector(up, s * b);
+        q.copy(side).multiplyScalar(c / a).addScaledVector(up, s / b).normalize();
+        const o = (k * radial + j) * 3;
+        pos[o] = p.x; pos[o + 1] = p.y; pos[o + 2] = p.z; nor[o] = q.x; nor[o + 1] = q.y; nor[o + 2] = q.z;
+      }
+    }
+    for (let k = 0; k < n; k++) for (let j = 0; j < radial; j++) {
+      const j2 = (j + 1) % radial, A = k * radial + j, B = k * radial + j2, C = (k + 1) * radial + j, D = (k + 1) * radial + j2;
+      idx.push(A, C, B, B, C, D);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+    g.setIndex(idx);
+    return g;
+  }
+  function setGeo(m, g) { if (m.geometry) m.geometry.dispose(); m.geometry = g; }
+  /* a frame whose local +Z is f and whose X stays level */
+  const basisQ = function (f) {
+    const side = V().crossVectors(UP, f);
+    if (side.lengthSq() < 1e-6) side.set(1, 0, 0); side.normalize();
+    const up = V().crossVectors(f, side).normalize();
+    return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(side, up, f));
+  };
+  const levelSide = function (f) { return V(f.z, 0, -f.x).normalize(); };
+
+  /* ---------- the bench and the mat ---------- */
+  mesh(new THREE.PlaneGeometry(1400, 1400).rotateX(-Math.PI / 2), std({ color: '#26292c', roughness: 0.88 }), scene, 0, -2, 0).castShadow = false;
+  (function () {
+    const W = 280, D = 176, k = 6.4, c = canvas(W * k, D * k), g = c.getContext('2d');
+    g.fillStyle = '#3a4650'; g.fillRect(0, 0, c.width, c.height);
+    noise(g, c.width, c.height, 10);
+    g.strokeStyle = 'rgba(205, 220, 230, 0.07)'; g.lineWidth = 1.2;
+    for (let x = 0; x <= W; x += 10) { g.beginPath(); g.moveTo(x * k, 0); g.lineTo(x * k, c.height); g.stroke(); }
+    for (let z = 0; z <= D; z += 10) { g.beginPath(); g.moveTo(0, z * k); g.lineTo(c.width, z * k); g.stroke(); }
+    g.strokeStyle = 'rgba(205, 220, 230, 0.15)'; g.lineWidth = 2;
+    for (let x = 0; x <= W; x += 50) { g.beginPath(); g.moveTo(x * k, 0); g.lineTo(x * k, c.height); g.stroke(); }
+    for (let z = 0; z <= D; z += 50) { g.beginPath(); g.moveTo(0, z * k); g.lineTo(c.width, z * k); g.stroke(); }
+    g.fillStyle = 'rgba(210, 224, 232, 0.45)'; g.font = '600 ' + (3 * k) + 'px Helvetica, Arial, sans-serif';
+    for (let x = 0; x <= W; x += 10) {
+      g.fillRect(x * k - 1, c.height - (x % 50 ? 3 : 5) * k, 2, (x % 50 ? 3 : 5) * k);
+      if (x % 50 === 0 && x > 0 && x < W) g.fillText(String(x), x * k + 1.2 * k, c.height - 2 * k);
+    }
+    g.fillText('mm', 2 * k, c.height - 2 * k);
+    const m = mesh(new THREE.BoxGeometry(W, 2, D), [M.black, M.black, std({ color: '#ffffff', roughness: 0.92, map: tex(c) }), M.black, M.black, M.black], scene, 0, -1, 60);
+    m.castShadow = false;
+  })();
+
+  const wires = [];
+  /* ======================= the amplifier ======================= */
+  const ampG = group(scene, 0, 0, 0);
+  const PANEL = { x0: -110, y0: 8, w: 220, h: 80, z: -30 };
+  const toPanel = function (x, y) { return [x - PANEL.x0, y - PANEL.y0]; };
+  const JACK = V(40, 32, PANEL.z);
+  const RCA = [[-60, 58, 'red'], [-60, 36, 'white'], [-35, 58, 'red'], [-35, 36, 'white']];
+  (function () {
+    const k = 9.31, c = canvas(Math.round(PANEL.w * k), Math.round(PANEL.h * k)), g = c.getContext('2d');
+    g.fillStyle = '#2a2c2f'; g.fillRect(0, 0, c.width, c.height);
+    for (let y = 0; y < c.height; y++) {
+      g.fillStyle = 'rgba(' + (Math.random() < 0.5 ? '255,255,255' : '0,0,0') + ',' + (Math.random() * 0.05).toFixed(3) + ')';
+      g.fillRect(0, y, c.width, 1);
+    }
+    for (let i = 0; i < 5000; i++) {
+      const y = Math.random() * c.height, x = Math.random() * c.width, l = 30 + Math.random() * 260;
+      g.fillStyle = 'rgba(' + (Math.random() < 0.5 ? '255,255,255' : '0,0,0') + ',' + (0.02 + Math.random() * 0.05).toFixed(3) + ')';
+      g.fillRect(x, y, l, 1);
+    }
+    const P = function (x, y) { const p = toPanel(x, y); return [p[0] * k, (PANEL.h - p[1]) * k]; };
+    g.fillStyle = '#d9dcdf'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    const label = function (txt, x, y, size, weight) {
+      const p = P(x, y); g.font = (weight || 600) + ' ' + (size * k) + 'px Helvetica, Arial, sans-serif';
+      if (g.letterSpacing !== undefined) g.letterSpacing = (size * 0.12 * k) + 'px';
+      g.fillText(txt, p[0], p[1]);
+    };
+    label('CONTROL', JACK.x, JACK.y - 9.5, 3.1, 700);
+    label('IN 1', -60, 68, 2.8); label('IN 2', -35, 68, 2.8);
+    label('R', -72, 58, 2.8); label('L', -72, 36, 2.8);
+    g.strokeStyle = '#d9dcdf'; g.lineWidth = 0.35 * k;
+    let p0 = P(-79, 73), p1 = P(-23, 27);
+    g.strokeRect(p0[0], p0[1], p1[0] - p0[0], p1[1] - p0[1]);
+    p0 = P(JACK.x - 12, JACK.y + 9); p1 = P(JACK.x + 12, JACK.y - 13);
+    g.strokeRect(p0[0], p0[1], p1[0] - p0[0], p1[1] - p0[1]);
+    const t = tex(c); t.repeat.set(1 / PANEL.w, 1 / PANEL.h);
+    const panelMat = std({ color: '#ffffff', map: t, metalness: 0.55, roughness: 0.42 });
+    const sh = new THREE.Shape();
+    sh.moveTo(0, 0); sh.lineTo(PANEL.w, 0); sh.lineTo(PANEL.w, PANEL.h); sh.lineTo(0, PANEL.h); sh.closePath();
+    const jp = toPanel(JACK.x, JACK.y), hole = new THREE.Path();
+    hole.moveTo(jp[0] - 5.6, jp[1] - 4.6); hole.lineTo(jp[0] + 5.6, jp[1] - 4.6); hole.lineTo(jp[0] + 5.6, jp[1] + 4.6); hole.lineTo(jp[0] - 5.6, jp[1] + 4.6); hole.closePath();
+    sh.holes.push(hole);
+    RCA.forEach(function (r) { const p = toPanel(r[0], r[1]), h = new THREE.Path(); h.absarc(p[0], p[1], 4.3, 0, Math.PI * 2, true); sh.holes.push(h); });
+    const pg = new THREE.ExtrudeGeometry(sh, { depth: 2, bevelEnabled: false, curveSegments: 28 });
+    mesh(pg, [panelMat, M.ampBody], ampG, PANEL.x0, PANEL.y0, PANEL.z - 2);
+  })();
+  /* the case behind the panel, open at the front so the jack's cavity shows through its hole */
+  (function () {
+    const zc = PANEL.z - 2 - 60, L = 120;
+    mesh(new THREE.BoxGeometry(224, 2.4, L + 2), M.ampBody, ampG, 0, PANEL.y0 + PANEL.h + 1.2, zc + 0.5);
+    mesh(new THREE.BoxGeometry(222, 2, L), M.ampBody, ampG, 0, PANEL.y0 + 1, zc);
+    mesh(new THREE.BoxGeometry(2, PANEL.h, L), M.ampBody, ampG, PANEL.x0 - 1, PANEL.y0 + PANEL.h / 2, zc);
+    mesh(new THREE.BoxGeometry(2, PANEL.h, L), M.ampBody, ampG, -PANEL.x0 + 1, PANEL.y0 + PANEL.h / 2, zc);
+    mesh(new THREE.BoxGeometry(222, PANEL.h, 2), M.ampBody, ampG, 0, PANEL.y0 + PANEL.h / 2, zc - L / 2);
+    [[-92, -42], [92, -42], [-92, -140], [92, -140]].forEach(function (f) {
+      mesh(new THREE.CylinderGeometry(8, 9, 10, 28), M.rubber, ampG, f[0], 3, f[1]);
+    });
+    [[-104, 14], [104, 14], [-104, 82], [104, 82]].forEach(function (s) {
+      const sc = group(ampG, s[0], s[1], PANEL.z);
+      mesh(new THREE.CylinderGeometry(2.8, 3, 1, 24).rotateX(Math.PI / 2), M.darkScrew, sc, 0, 0, 0.5);
+      mesh(new THREE.BoxGeometry(3, 0.6, 0.4), M.hole, sc, 0, 0, 1.05, true);
+      mesh(new THREE.BoxGeometry(0.6, 3, 0.4), M.hole, sc, 0, 0, 1.05, true);
+    });
+  })();
+  /* the RCA sockets, generic */
+  RCA.forEach(function (r) {
+    const g = group(ampG, r[0], r[1], PANEL.z);
+    const nut = new THREE.CylinderGeometry(5.6, 5.6, 1.6, 6); nut.rotateX(Math.PI / 2);
+    mesh(nut, M.chrome, g, 0, 0, 0.8);
+    const prof = [[4.1, 1.6], [4.1, 7.5], [4.0, 8.0], [3.55, 8.15], [3.2, 7.6], [3.2, 0.8]].map(function (p) { return new THREE.Vector2(p[0], p[1]); });
+    const bar = new THREE.LatheGeometry(prof, 40); bar.rotateX(Math.PI / 2);
+    mesh(bar, M.gold, g, 0, 0, 0);
+    const ins = cyl(3.2, 1.2, r[2] === 'red' ? M.insRed : M.insWhite, g, 32); ins.position.z = 2.4;
+    const pin = cyl(1.15, 5, M.gold, g, 20); pin.position.z = 5;
+    const ph = cyl(0.6, 0.2, M.hole, g, 12); ph.position.z = 7.55;
+  });
+  /* the RJ12 jack: a black bezel, a dark cavity and four contacts (6P4C) */
+  (function () {
+    const g = group(ampG, JACK.x, JACK.y, JACK.z);
+    const sh = new THREE.Shape(); sh.moveTo(-6.6, -5.6); sh.lineTo(6.6, -5.6); sh.lineTo(6.6, 5.6); sh.lineTo(-6.6, 5.6); sh.closePath();
+    const h = new THREE.Path(); h.moveTo(-4.95, -3.5); h.lineTo(-2, -3.5); h.lineTo(-2, -4.6); h.lineTo(2, -4.6); h.lineTo(2, -3.5); h.lineTo(4.95, -3.5); h.lineTo(4.95, 3.5); h.lineTo(-4.95, 3.5); h.closePath();
+    sh.holes.push(h);
+    mesh(new THREE.ExtrudeGeometry(sh, { depth: 1.1, bevelEnabled: true, bevelThickness: 0.2, bevelSize: 0.2, bevelSegments: 2 }), M.black, g, 0, 0, -0.1);
+    mesh(new THREE.BoxGeometry(9.9, 7.0, 16), std({ color: '#0b0c0d', roughness: 0.8, side: THREE.BackSide }), g, 0, 0, -8, true);
+    for (let j = 1; j <= 4; j++) {
+      const c = mesh(new THREE.BoxGeometry(0.36, 0.22, 7.5), M.gold, g, (j - 2.5) * 1.02, 2.4, -7.5, true);
+      c.rotation.x = -0.22;
+    }
+    for (let j = 0; j <= 6; j++) mesh(new THREE.BoxGeometry(0.22, 1.1, 9), M.black, g, (j - 3) * 1.02, 3.0, -9, true);
+  })();
+
+  /* ======================= the RJ12 adapter ======================= */
+  const TX = function (t) { return 30 + (t - 3.5) * 5.08; };
+  const HOLE_Y = 7.9, FRONT_Z = 35, SCREW_Y = 14.6, SCREW_Z = 30.2;
+  const adG = group(scene, 0, 0, 0);
+  const screws = {}, halos = {};
+  (function () {
+    /* the board: black solder mask, white silkscreen numbers as printed */
+    const k = 20, c = canvas(50 * k, 20 * k), g = c.getContext('2d');
+    g.fillStyle = '#16181a'; g.fillRect(0, 0, c.width, c.height);
+    noise(g, c.width, c.height, 6);
+    const X = function (x) { return (x - 5) * k; }, Z = function (z) { return (z - 15) * k; };
+    g.strokeStyle = '#22262a'; g.lineWidth = 0.8 * k; g.lineCap = 'round';
+    for (let t = 1; t <= 6; t++) {
+      g.beginPath(); g.moveTo(X(30 + (t - 3.5) * 1.1), Z(17.8)); g.lineTo(X(30 + (t - 3.5) * 1.1), Z(20)); g.lineTo(X(TX(t)), Z(23.5)); g.lineTo(X(TX(t)), Z(27.5)); g.stroke();
+    }
+    g.fillStyle = '#b08a3e';
+    [[7.5, 17.5], [52.5, 17.5], [7.5, 32.5], [52.5, 32.5]].forEach(function (h) {
+      g.beginPath(); g.arc(X(h[0]), Z(h[1]), 1.6 * k, 0, Math.PI * 2); g.fill();
+    });
+    g.fillStyle = '#050505';
+    [[7.5, 17.5], [52.5, 17.5], [7.5, 32.5], [52.5, 32.5]].forEach(function (h) {
+      g.beginPath(); g.arc(X(h[0]), Z(h[1]), 1.1 * k, 0, Math.PI * 2); g.fill();
+    });
+    g.fillStyle = '#eef0ee'; g.strokeStyle = '#eef0ee'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = '700 ' + (2.6 * k) + 'px Helvetica, Arial, sans-serif';
+    for (let t = 1; t <= 6; t++) g.fillText(String(t), X(TX(t)), Z(24.6));
+    g.lineWidth = 0.18 * k;
+    g.strokeRect(X(TX(1) - 2.7), Z(26.6), (TX(6) - TX(1) + 5.4) * k, 8.6 * k);
+    g.font = '600 ' + (1.7 * k) + 'px Helvetica, Arial, sans-serif';
+    g.textAlign = 'left'; g.fillText('RJ12 6P6C', X(10), Z(17.6));
+    g.textAlign = 'right'; g.fillText('1:1', X(50), Z(17.6));
+    const top = tex(c);
+    mesh(new THREE.BoxGeometry(50, 1.6, 20), [M.fr4, M.fr4, std({ color: '#ffffff', map: top, roughness: 0.5, metalness: 0.05 }), M.fr4, M.fr4, M.fr4], adG, 30, 3.8, 25);
+    [[7.5, 17.5], [52.5, 17.5], [7.5, 32.5], [52.5, 32.5]].forEach(function (h) {
+      mesh(new THREE.CylinderGeometry(1.5, 1.5, 3, 6), M.standoff, adG, h[0], 1.5, h[1]);
+    });
+    /* the green block: a stepped profile, six openings in front, six slotted screws on top */
+    const blk = group(adG, 30, 4.6, 31);
+    const prof = new THREE.Shape();
+    const P = [[4, 0], [4, 6.4], [2.4, 10], [-4, 10], [-4, 0]];
+    prof.moveTo(-P[0][0], P[0][1]); for (let i = 1; i < P.length; i++) prof.lineTo(-P[i][0], P[i][1]); prof.closePath();
+    const W = 6 * 5.08;
+    const bg = new THREE.ExtrudeGeometry(prof, { depth: W, bevelEnabled: false });
+    bg.rotateY(Math.PI / 2); bg.translate(-W / 2, 0, 0);
+    mesh(bg, M.term, blk);
+    for (let t = 1; t <= 6; t++) {
+      const x = TX(t) - 30;
+      mesh(new THREE.PlaneGeometry(3.1, 3.1), M.steel, blk, x, HOLE_Y - 4.6, 4.02, true);
+      mesh(new THREE.PlaneGeometry(2.2, 2.2), M.hole, blk, x, HOLE_Y - 4.6, 4.04, true);
+      const rec = new THREE.CircleGeometry(2.05, 28); rec.rotateX(-Math.PI / 2);
+      mesh(rec, M.hole, blk, x, 10.02, SCREW_Z - 31, true);
+      const sc = group(blk, x, 10, SCREW_Z - 31);
+      mesh(new THREE.CylinderGeometry(1.6, 1.6, 1.0, 28), M.nickel, sc, 0, -0.5, 0);
+      mesh(new THREE.BoxGeometry(3.1, 0.5, 0.5), M.hole, sc, 0, 0.02, 0, true);
+      screws[t] = sc;
+      if (t < 6) {
+        mesh(new THREE.BoxGeometry(0.35, 5.6, 0.25), std({ color: '#226b3b', roughness: 0.6 }), blk, x + 2.54, 3.2, 4.02, true);
+        mesh(new THREE.BoxGeometry(0.35, 0.25, 6.0), std({ color: '#226b3b', roughness: 0.6 }), blk, x + 2.54, 10.02, -1.0, true);
+      }
+      const hs = new THREE.Shape(); hs.moveTo(-2.5, -2.5); hs.lineTo(2.5, -2.5); hs.lineTo(2.5, 2.5); hs.lineTo(-2.5, 2.5); hs.closePath();
+      const hh = new THREE.Path(); hh.moveTo(-1.75, -1.75); hh.lineTo(1.75, -1.75); hh.lineTo(1.75, 1.75); hh.lineTo(-1.75, 1.75); hh.closePath(); hs.holes.push(hh);
+      const halo = mesh(new THREE.ShapeGeometry(hs), new THREE.MeshBasicMaterial({ color: lin('#f0a86e'), toneMapped: false }), blk, x, HOLE_Y - 4.6, 4.08, true);
+      halo.visible = false; halos[t] = halo;
+      const ring = mesh(new THREE.RingGeometry(2.2, 2.8, 32), halo.material, blk, x, 10.06, SCREW_Z - 31, true);
+      ring.rotation.x = -Math.PI / 2; ring.visible = false; halo.userData.ring = ring;
+    }
+    /* the glue over the lead's joint */
+    const gl = mesh(new THREE.SphereGeometry(1, 20, 12), M.glue, adG, 30, 5.2, 17.4, true);
+    gl.scale.set(4.6, 1.2, 2.6);
+  })();
+
+  /* ======================= the Atom Lite ======================= */
+  const ATOM = V(-25, 0, 80);
+  const atomG = group(scene, ATOM.x, 0, ATOM.z);
+  (function () {
+    mesh(rbox(24, 10, 24, 3, 1.1), M.abs, atomG, 0, 5, 0);
+    mesh(rbox(20.4, 1.2, 20.4, 2.4, 0.45), M.btn, atomG, 0, 10.05, 0);
+    mesh(rbox(23.2, 0.4, 23.2, 2.7, 0.1), std({ color: '#26282b', roughness: 0.7 }), atomG, 0, 9.5, 0, true);
+    /* USB-C on the +z side */
+    const usb = group(atomG, 0, 4.6, 12);
+    mesh(rbox(9.6, 0.6, 3.8, 1.7, 0.2).rotateX(Math.PI / 2), M.hole, usb, 0, 0, -0.18, true);
+    mesh(rbox(8.6, 0.5, 2.8, 1.3, 0.15).rotateX(Math.PI / 2), M.steel, usb, 0, 0, -0.1, true);
+    mesh(new THREE.BoxGeometry(7.6, 1.9, 0.2), M.hole, usb, 0, 0, 0.12, true);
+    mesh(new THREE.BoxGeometry(6.4, 0.6, 0.2), M.black, usb, 0, 0, 0.18, true);
+    /* the Grove socket on the -z side */
+    const gr = group(atomG, 0, 4.2, -12);
+    mesh(rbox(9.8, 0.7, 5.8, 0.6, 0.2).rotateX(Math.PI / 2), M.nylon, gr, 0, 0, 0.05, true);
+    const gh = mesh(new THREE.PlaneGeometry(8.2, 4.8), M.hole, gr, 0, -0.2, -0.32, true); gh.rotation.y = Math.PI;
+    /* the 2.54 mm header in the back */
+    for (let i = 0; i < 5; i++) {
+      const hb = mesh(new THREE.PlaneGeometry(1.2, 1.2), M.hole, atomG, -5.08 + i * 2.54, -0.02, 7.5, true); hb.rotation.x = Math.PI / 2;
+    }
+  })();
+
+  /* ---------- connectors ---------- */
+  function grovePlug() {
+    const g = group(scene);
+    mesh(rbox(8.0, 4.6, 7, 0.6, 0.3), M.nylon, g, 0, 0, -3.5);
+    mesh(new THREE.BoxGeometry(3.4, 0.6, 3.6), M.nylon, g, 0, 2.55, -4.2);
+    const ramp = mesh(new THREE.BoxGeometry(3.4, 0.5, 1.6), M.nylon, g, 0, 2.95, -2.6); ramp.rotation.x = -0.35;
+    for (let i = 0; i < 4; i++) mesh(new THREE.BoxGeometry(0.9, 2.2, 0.3), M.hole, g, (i - 1.5) * 2, -0.2, -7.02, true);
+    return g;
+  }
+  const plugA = grovePlug(), plugB = grovePlug();
+
+  function rjPlug() {
+    const g = group(scene);
+    mesh(new THREE.BoxGeometry(9.6, 6.5, 20), M.clear, g, 0, 0, -10, true);
+    const latch = mesh(new THREE.BoxGeometry(4, 0.9, 11), M.clear, g, 0, -4.0, -12.5, true); latch.rotation.x = -0.2;
+    mesh(new THREE.BoxGeometry(8.8, 1.4, 3), M.clear, g, 0, 1.6, -6.2, true);
+    for (let j = 0; j < 6; j++) {
+      const x = (j - 2.5) * 1.02;
+      mesh(new THREE.BoxGeometry(0.32, 1.6, 3.4), M.gold, g, x, 2.55, -17.6, true);
+      const cg = new THREE.CylinderGeometry(0.32, 0.32, 10, 10); cg.rotateX(Math.PI / 2);
+      mesh(cg, std({ color: SAT[j], roughness: 0.5 }), g, x, 1.2, -11, true);
+    }
+    return g;
+  }
+  const rj = rjPlug();
+  const rjLead = mesh(new THREE.BufferGeometry(), M.satin, scene);
+
+  function usbPlug() {
+    const g = group(scene);
+    mesh(rbox(11, 18, 6.2, 2.6, 1.2).rotateX(Math.PI / 2), M.overmold, g, 0, 0, -9);
+    mesh(rbox(8.3, 6.6, 2.5, 1.2, 0.3).rotateX(Math.PI / 2), M.steel, g, 0, 0, -21.2);
+    return g;
+  }
+  const usbA = usbPlug(), usbB = usbPlug();
+  const usbCable = mesh(new THREE.BufferGeometry(), M.usb, scene);
+  const brick = mesh(rbox(28, 28, 28, 4.5, 1.6), M.brick, scene, 62, 14, 116);
+  mesh(new THREE.BoxGeometry(9.2, 3.4, 0.3), M.hole, brick, -14.05, 0, 0, true).rotation.y = Math.PI / 2;
+
+  /* ---------- the screwdriver ---------- */
+  const drvG = group(scene);
+  (function () {
+    mesh(new THREE.BoxGeometry(2.0, 3.2, 0.45), M.steel, drvG, 0, 1.6, 0);
+    mesh(new THREE.CylinderGeometry(1.0, 1.0, 40, 16), M.steel, drvG, 0, 22, 0);
+    mesh(new THREE.CylinderGeometry(2.4, 2.4, 4, 24), M.chrome, drvG, 0, 44, 0);
+    const kc = canvas(64, 8), kg = kc.getContext('2d');
+    kg.fillStyle = '#808080'; kg.fillRect(0, 0, 64, 8);
+    for (let i = 0; i < 64; i += 8) { kg.fillStyle = '#ffffff'; kg.fillRect(i, 0, 4, 8); }
+    const kt = tex(kc, false); kt.wrapS = THREE.RepeatWrapping; kt.repeat.set(14, 1);
+    M.handle.bumpMap = kt; M.handle.bumpScale = 0.4;
+    const prof = [[0.01, 46], [2.8, 46], [3.8, 48], [4.4, 52], [4.5, 60], [4.5, 97], [4.2, 99.5], [3.7, 100.2], [0.01, 100.2]].map(function (p) { return new THREE.Vector2(p[0], p[1]); });
+    mesh(new THREE.LatheGeometry(prof, 36), M.handle, drvG);
+    mesh(new THREE.CylinderGeometry(3.6, 3.6, 5, 28), M.cap, drvG, 0, 102.6, 0);
+  })();
+
+  /* ---------- resistors ---------- */
+  function resistorBody(parent) {
+    const L = 6.3, N = 34, pts = [];
+    for (let i = 0; i < N; i++) {
+      const y = i / (N - 1) * L, e = Math.min(y, L - y);
+      let r = 1.02 + 0.2 * Math.exp(-Math.pow((e - 0.95) / 0.55, 2));
+      if (e < 0.45) r *= Math.sqrt(Math.max(0.05, e / 0.45)) * 0.75 + 0.25;
+      pts.push(new THREE.Vector2(i === 0 || i === N - 1 ? 0.3 : r, y));
+    }
+    const c = canvas(16, 256), g = c.getContext('2d');
+    g.fillStyle = '#d6c094'; g.fillRect(0, 0, 16, 256);
+    const band = function (at, w, col) { g.fillStyle = col; g.fillRect(0, (1 - (at + w / 2) / L) * 256, 16, w / L * 256); };
+    band(1.25, 0.55, '#7a4a22'); band(2.15, 0.55, '#151515'); band(3.05, 0.55, '#e3761f'); band(5.0, 0.55, '#c5a04c');
+    const geo = new THREE.LatheGeometry(pts, 28); geo.rotateX(Math.PI / 2);
+    return mesh(geo, phys({ color: '#ffffff', map: tex(c), roughness: 0.45, clearcoat: 0.6, clearcoatRoughness: 0.3 }), parent);
+  }
+  const looseRes = group(scene, 68, 1.25, 76);
+  looseRes.rotation.y = Math.PI / 2 - 0.12;
+  (function () {
+    resistorBody(looseRes);
+    const l1 = cyl(0.3, 26, M.tin, looseRes, 8); l1.position.z = -13;
+    const l2 = cyl(0.3, 26, M.tin, looseRes, 8); l2.position.z = 6.3 + 13;
+  })();
+
+  /* ---------- the Grove cable ---------- */
+  /* wire order across the plug: 0 black GND, 1 red 5V, 2 yellow G26, 3 white G32 */
+  const WR = 0.62;
+  const LINK = ['t5', 'red', 't4', 't3'];
+  const TERM = [5, 0, 4, 3];
+  const wireMesh = [];
+  for (let i = 0; i < 4; i++) {
+    const m = mesh(new THREE.BufferGeometry(), std({ color: WIRE_HEX[i], roughness: 0.42 }), scene);
+    m.userData.link = LINK[i]; wireMesh.push(m); wires.push(m);
+  }
+  function linked(m, link) { m.traverse(function (o) { if (o.isMesh) { o.userData.link = link; if (o.material && !o.material.isShared) { o.material = o.material.clone(); } wires.push(o); } }); }
+  function strands(parent, len) {
+    for (let s = 0; s < 7; s++) {
+      const pts = [];
+      for (let z = 0; z <= len + 0.001; z += len / 5) {
+        const a = s * Math.PI / 3 + z * 1.1, r = s === 6 ? 0 : 0.19;
+        pts.push(V(Math.cos(a) * r, Math.sin(a) * r, z));
+      }
+      mesh(sweep(pts, 0.105, 0.105, 6), M.copper, parent, 0, 0, 0, true);
+    }
+  }
+  const tips = [];
+  for (let i = 0; i < 4; i++) {
+    const t = { copper: group(scene), tape: null, res: null };
+    strands(t.copper, 5);
+    const cap = mesh(new THREE.CircleGeometry(WR, 16), std({ color: WIRE_HEX[i], roughness: 0.6 }), t.copper, 0, 0, 0.01, true);
+    cap.rotation.y = 0;
+    linked(t.copper, LINK[i]);
+    tips.push(t);
+  }
+  /* red: taped */
+  tips[1].tape = group(scene);
+  (function () {
+    const g = tips[1].tape;
+    const c1 = cyl(1.02, 13, M.tape, g, 20); c1.position.z = 2.5;
+    const capg = new THREE.SphereGeometry(1.02, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2); capg.rotateX(Math.PI / 2);
+    mesh(capg, M.tape, g, 0, 0, 9);
+    const flap = mesh(new THREE.BoxGeometry(2.2, 0.12, 3), M.tape, g, 0.4, 1.0, 1.0); flap.rotation.z = 0.25;
+    linked(g, 'red');
+  })();
+  /* yellow: the series resistor under clear heat-shrink, 30 mm from the insulation's end to the clamp */
+  tips[2].res = group(scene);
+  (function () {
+    const g = tips[2].res;
+    strands(g, 6);
+    const l1 = cyl(0.3, 9, M.tin, g, 8); l1.position.z = 4.5;
+    const body = resistorBody(g); body.position.z = 9;
+    const l2 = cyl(0.3, 14.9, M.tin, g, 8); l2.position.z = 15.3 + 7.45;
+    const prof = [[0.9, -3], [0.9, 1], [1.05, 2], [1.05, 8], [1.5, 8.9], [1.5, 15.6], [0.75, 16.6], [0.6, 18.5], [0.6, 22]].map(function (p) { return new THREE.Vector2(p[0], p[1]); });
+    const sg = new THREE.LatheGeometry(prof, 28); sg.rotateX(Math.PI / 2);
+    const sh = mesh(sg, M.shrink, g, 0, 0, 0, true); sh.renderOrder = 2;
+    linked(g, 't4');
+  })();
+
+  /* ---------- poses ---------- */
+  const CONN_LOOSE = { p: V(-47, 2.35, 50), d: V(1, 0, -0.25).normalize() };
+  const CONN_PRE = { p: V(-25, 4.2, 56), d: V(0, 0, -1) };
+  const CONN_IN = { p: V(-25, 4.2, 64.6), d: V(0, 0, -1) };
+  const B_POSE = { p: V(12, 2.35, 47), d: V(-1, 0, 0.18).normalize() };
+  const LOOSE_END = [
+    { p: V(46, WR, 49), d: V(1, 0, -0.32).normalize() },
+    { p: V(6, WR, 66), d: V(0.55, 0, 1).normalize() },
+    { p: V(42, WR, 61), d: V(1, 0, 0.32).normalize() },
+    { p: V(36, WR, 55), d: V(1, 0, 0.05).normalize() }
+  ];
+  const wiredEnd = function (t) { return { p: V(TX(t), HOLE_Y, FRONT_Z - 4), d: V(0, 0, -1) }; };
+  const intactEnd = function (i) {
+    const s = levelSide(B_POSE.d).multiplyScalar(-(i - 1.5) * 2);
+    return { p: B_POSE.p.clone().add(s), d: B_POSE.d.clone().negate() };
+  };
+  const lerpPose = function (a, b, u) { return { p: a.p.clone().lerp(b.p, u), d: a.d.clone().lerp(b.d, u).normalize() }; };
+  const RJ_LOOSE = { p: V(56, 4.4, -1), d: V(-0.35, 0, 1).normalize() };
+  const RJ_PRE = { p: V(JACK.x, JACK.y, -6), d: V(0, 0, 1) };
+  const RJ_IN = { p: V(JACK.x, JACK.y, JACK.z + 7), d: V(0, 0, 1) };
+  const USB_LOOSE = { p: V(-30, 3.1, 128), d: V(1, 0, -0.12).normalize() };
+  const USB_PRE = { p: V(-25, 4.6, 120), d: V(0, 0, 1) };
+  const USB_IN = { p: V(-25, 4.6, 110.2), d: V(0, 0, 1) };
+  const USB_BRICK = { p: V(30, 14, 116), d: V(-1, 0, 0) };
+  const DRV_BENCH = { p: V(-40, 1.3, 141), a: V(106, 3.3, -5).normalize() };
+  const drvAt = function (t) { return { p: V(TX(t), SCREW_Y + 0.15, SCREW_Z), a: V(0, 1, 0.1).normalize() }; };
+  /* two-stage moves: carry it over, then push it straight in */
+  function insertPose(L, PRE, IN, u, lift) {
+    if (u <= 0.62) {
+      const k = u / 0.62, q = lerpPose(L, PRE, k);
+      q.p.y += Math.sin(Math.PI * k) * lift; return q;
+    }
+    return lerpPose(PRE, IN, (u - 0.62) / 0.38);
+  }
+
+  /* ---------- state ---------- */
+  const KEYS = ['conn', 'e0', 'e1', 'e2', 'e3', 's3', 's4', 's5', 'du', 'rj', 'usb', 'tug'];
+  function target(k) {
+    return {
+      conn: k >= 7 ? 1 : 0,
+      e0: k === 1 ? 0 : (k >= 3 ? 2 : 1),
+      e1: k === 1 ? 0 : 1,
+      e2: k === 1 ? 0 : (k >= 5 ? 2 : 1),
+      e3: k === 1 ? 0 : (k >= 4 ? 2 : 1),
+      s5: k >= 3 ? 1 : 0, s3: k >= 4 ? 1 : 0, s4: k >= 5 ? 1 : 0,
+      du: 1, rj: k >= 8 ? 1 : 0, usb: k >= 9 ? 1 : 0, tug: 0,
+      drv: k === 3 ? 5 : k === 4 ? 3 : k === 5 ? 4 : 0
+    };
+  }
+  const WIN = {
+    2: { e0: [0.1, 1], e1: [0.1, 1], e2: [0.1, 1], e3: [0.1, 1] },
+    3: { e0: [0, 0.45], du: [0.36, 0.62], s5: [0.64, 0.97] },
+    4: { e3: [0, 0.45], du: [0.36, 0.62], s3: [0.64, 0.97] },
+    5: { e2: [0, 0.45], du: [0.36, 0.62], s4: [0.64, 0.97] },
+    6: { du: [0, 0.32], tug: [0.36, 1] }
+  };
+  const DUR = { 1: 800, 2: 1500, 3: 2800, 4: 2800, 5: 2800, 6: 2600, 7: 1500, 8: 1800, 9: 1500 };
+  let P = target(NSTEP), drvFrom = 0, drvTo = 0, anim = null, cut = true, attach = false, kNow = NSTEP;
+
+  const screwAng = function (t) { return (t === 3 ? P.s3 : t === 4 ? P.s4 : t === 5 ? P.s5 : 0) * Math.PI * 2.5; };
+  const qSpin = new THREE.Quaternion(), qa = new THREE.Quaternion(), qb = new THREE.Quaternion();
+  function drvPose(key) { return key ? drvAt(key) : DRV_BENCH; }
+
+  function endPose(i, e) {
+    const I = intactEnd(i), L = LOOSE_END[i];
+    if (e <= 1) { const q = lerpPose(I, L, e); q.p.y += Math.sin(Math.PI * e) * 4; return q; }
+    const W = wiredEnd(TERM[i]), u = e - 1, q = lerpPose(L, W, u);
+    q.p.y += Math.sin(Math.PI * u) * 11; return q;
+  }
+  const tipLen = function (i) { if (!cut) return 0; return i === 1 ? 10 : (i === 2 && attach ? 30 : 5); };
+  function wirePts(i, c, end, tl, tug) {
+    const f = c.d, side = levelSide(f), o = (i - 1.5) * 2;
+    const ins = end.p.clone().addScaledVector(end.d, -tl);
+    const S0 = c.p.clone().addScaledVector(side, o).addScaledVector(f, -1.5);
+    const S1 = c.p.clone().addScaledVector(side, o).addScaledVector(f, 3.5);
+    const S2 = c.p.clone().addScaledVector(side, o * 0.85).addScaledVector(f, 11); S2.y = Math.max(WR, c.p.y * 0.3);
+    const E1 = ins.clone().addScaledVector(end.d, -6);
+    const E2 = ins.clone().addScaledVector(end.d, -15); E2.y = Math.max(WR, ins.y * 0.3);
+    const ch = V().subVectors(E2, S2); ch.y = 0;
+    const perp = ch.lengthSq() > 1 ? V(ch.z, 0, -ch.x).normalize() : side.clone();
+    const sg = perp.dot(side) < 0 ? -1 : 1, bow = Math.min(7, ch.length() * 0.12);
+    const M1 = S2.clone().lerp(E2, 0.35).addScaledVector(perp, bow + o * sg * 0.75); M1.y = WR;
+    const M2 = S2.clone().lerp(E2, 0.7).addScaledVector(perp, -bow * 0.5 + o * sg * 0.45); M2.y = WR;
+    if (tug) { E2.add(V(0, 3.2, 5).multiplyScalar(tug)); M2.add(V(0, 1.4, 2.5).multiplyScalar(tug)); }
+    return { pts: [S0, S1, S2, M1, M2, E2, E1, ins], ins: ins };
+  }
+  function cablePts(a, b, bowSide) {
+    const A0 = a.p.clone().addScaledVector(a.d, -4), A1 = a.p.clone().addScaledVector(a.d, 7);
+    const A2 = a.p.clone().addScaledVector(a.d, 17); A2.y = 1.75;
+    const B0 = b.p.clone().addScaledVector(b.d, -4), B1 = b.p.clone().addScaledVector(b.d, 7);
+    const B2 = b.p.clone().addScaledVector(b.d, 18); B2.y = 1.75; B1.y = Math.max(1.75, b.p.y - 2);
+    const ch = V().subVectors(B2, A2); ch.y = 0;
+    const perp = V(ch.z, 0, -ch.x).normalize().multiplyScalar(bowSide);
+    const Mm = A2.clone().lerp(B2, 0.5).add(perp); Mm.y = 1.75;
+    return [A0, A1, A2, Mm, B2, B1, B0];
+  }
+  function leadPts(a) {
+    const P0 = a.p.clone().addScaledVector(a.d, -7), P1 = a.p.clone().addScaledVector(a.d, 6);
+    const Q0 = V(30, 5.3, 18.2), Q1 = V(30, 5.25, 13), Q2 = V(30, 0.75, 4);
+    const Mm = P1.clone().lerp(Q2, 0.5), ch = V().subVectors(Q2, P1); ch.y = 0;
+    const perp = V(ch.z, 0, -ch.x).normalize();
+    if (perp.x * (Mm.x - 30) + perp.z * (Mm.z - 25) < 0) perp.negate();
+    Mm.addScaledVector(perp, 9); Mm.y = Math.max(0.75, (P1.y + Q2.y) * 0.5 * 0.45);
+    return [P0, P1, Mm, Q2, Q1, Q0];
+  }
+  const place = function (obj, pose) { obj.position.copy(pose.p); obj.quaternion.copy(basisQ(pose.d)); };
+
+  const sig = {};
+  function changed(key, val) { const s = val.map(function (v) { return v.toFixed ? v.toFixed(4) : String(v); }).join(','); if (sig[key] === s) return false; sig[key] = s; return true; }
+  let dirtyFlag = true;
+  function apply() {
+    dirtyFlag = true;
+    /* the Grove connector and its four wires */
+    const c = insertPose(CONN_LOOSE, CONN_PRE, CONN_IN, P.conn, 9);
+    place(plugA, c);
+    plugB.visible = !cut;
+    if (!cut) place(plugB, { p: B_POSE.p.clone(), d: B_POSE.d.clone() });
+    const tug = kNow === 6 && anim ? Math.pow(Math.sin(Math.PI * 3 * P.tug), 2) : 0;
+    for (let i = 0; i < 4; i++) {
+      const e = P['e' + i], end = endPose(i, e), tl = tipLen(i);
+      const tg = e > 1.99 ? tug : 0;
+      if (changed('w' + i, [c.p.x, c.p.y, c.p.z, c.d.x, c.d.z, end.p.x, end.p.y, end.p.z, end.d.x, end.d.z, tl, tg])) {
+        const w = wirePts(i, c, end, tl, tg);
+        setGeo(wireMesh[i], sweep(w.pts, WR, WR, 10));
+        const t = tips[i], q = new THREE.Quaternion().setFromUnitVectors(V(0, 0, 1), end.d);
+        [t.copper, t.tape, t.res].forEach(function (g) { if (g) { g.position.copy(w.ins); g.quaternion.copy(q); } });
+      }
+      const t = tips[i];
+      t.copper.visible = cut && i !== 1 && !(i === 2 && attach);
+      if (t.tape) t.tape.visible = cut;
+      if (t.res) t.res.visible = cut && attach;
+    }
+    looseRes.visible = kNow === 1 || (resOn && kNow < 5);
+    /* screws */
+    for (let t = 1; t <= 6; t++) {
+      const s = t === 3 ? P.s3 : t === 4 ? P.s4 : t === 5 ? P.s5 : 1;
+      screws[t].rotation.y = screwAng(t) + (t === 1 || t === 2 || t === 6 ? 0.4 * t : 0);
+      screws[t].position.y = 10.15 + (1 - s) * 0.6;
+    }
+    /* the screwdriver */
+    const a = drvPose(drvFrom), b = drvPose(drvTo), u = P.du;
+    const pos = a.p.clone().lerp(b.p, u); pos.y += Math.sin(Math.PI * u) * (drvFrom === drvTo ? 0 : 38);
+    qa.setFromUnitVectors(UP, a.a); qb.setFromUnitVectors(UP, b.a);
+    const spin = (drvFrom ? screwAng(drvFrom) : 0) * (1 - u) + (drvTo ? screwAng(drvTo) : 0) * u;
+    drvG.position.copy(pos);
+    drvG.quaternion.copy(qa).slerp(qb, u).multiply(qSpin.setFromAxisAngle(UP, spin));
+    /* the RJ12 plug and its flat lead */
+    const r = insertPose(RJ_LOOSE, RJ_PRE, RJ_IN, P.rj, 22);
+    place(rj, r);
+    if (changed('rj', [r.p.x, r.p.y, r.p.z, r.d.x, r.d.z])) setGeo(rjLead, sweep(leadPts(r), 2.9, 0.62, 16));
+    /* USB-C */
+    const ua = insertPose(USB_LOOSE, USB_PRE, USB_IN, P.usb, 10);
+    place(usbA, ua); place(usbB, USB_BRICK);
+    if (changed('usb', [ua.p.x, ua.p.y, ua.p.z, ua.d.x, ua.d.z])) setGeo(usbCable, sweep(cablePts(ua, USB_BRICK, 9), 1.7, 1.7, 14));
+    /* step 6 lights the empty terminals */
+    paintHalos();
+  }
+
+  /* ---------- tags ---------- */
+  const tagList = [];
+  function tag(html, cls, get, opt) {
+    const el = document.createElement('div');
+    el.className = 'tag ' + (cls || ''); el.innerHTML = html; el.hidden = true;
+    labelsEl.appendChild(el);
+    const t = Object.assign({ el: el, get: get, x: 0, y: 0 }, opt || {});
+    tagList.push(t); return t;
+  }
+  const fixed = function (p) { return function () { return p; }; };
+  const onObj = function (o, local) { return function (out) { return o.localToWorld(out.copy(local)); }; };
+  tag('M5Stack Atom Lite', 'unit', fixed(V(ATOM.x, 16, ATOM.z)));
+  tag('RJ12 adapter<small>screw terminals</small>', 'unit', fixed(V(54, 24, 25)));
+  tag('Amplifier<small>rear panel</small>', 'unit', fixed(V(-20, 96, -32)));
+  tag('USB 5 V supply', 'unit', fixed(V(62, 34, 116)));
+  tag('Screwdriver', 'unit', onObj(drvG, V(0, 70, 0)), { when: function () { return kNow <= 2; } });
+  tag('Grove cable', 'unit', onObj(plugA, V(0, 5, -3)), { when: function () { return kNow <= 2; } });
+  tag('10 kΩ<small>optional</small>', 'unit', onObj(looseRes, V(0, 4, 3)), { obj: looseRes });
+  tag('10 kΩ in heat-shrink', '', onObj(tips[2].res, V(0, 3, 12)), { obj: tips[2].res, pin: true });
+  tag('CONTROL<small>6P4C</small>', 'unit', fixed(V(JACK.x, JACK.y + 9, JACK.z + 1)), { pin: true });
+  tag('Grove · GND 5V G26 G32', '', fixed(V(ATOM.x, 8.5, ATOM.z - 12.5)), { pin: true, near: 300 });
+  tag('red 5 V · taped off', '', onObj(tips[1].tape, V(0, 1.6, 4)), { obj: tips[1].tape, pin: true });
+  tag('USB-C', '', fixed(V(ATOM.x + 9, 8, ATOM.z + 12.5)), { pin: true, near: 300 });
+  const termTags = {};
+  for (let t = 1; t <= 6; t++) {
+    termTags[t] = tag(String(t), 'num' + (t === 1 || t === 2 || t === 6 ? ' nc' : ''), fixed(V(TX(t), SCREW_Y + 2.6, SCREW_Z)), { pin: true, near: 280 });
+  }
+
+  /* ---------- tracing ---------- */
+  let hl = null;
+  function paintHalos() {
+    for (let t = 1; t <= 6; t++) {
+      const on = hl ? hl === 't' + t : (kNow === 6 && (t === 1 || t === 2 || t === 6));
+      halos[t].visible = on; halos[t].userData.ring.visible = on;
+      termTags[t].el.classList.toggle('hot', on);
+    }
+  }
+  function highlight3D(id) {
+    hl = id;
+    wires.forEach(function (m) {
+      const on = !id || m.userData.link === id;
+      const mat = m.material;
+      if (mat.userData.baseOpacity === undefined) mat.userData.baseOpacity = mat.opacity, mat.userData.baseTransparent = mat.transparent;
+      mat.transparent = on ? mat.userData.baseTransparent : true;
+      mat.opacity = on ? mat.userData.baseOpacity : 0.12;
+      mat.depthWrite = on && !mat.userData.baseTransparent;
+      if (mat.emissive) mat.emissive.setHex(id && m.userData.link === id ? 0x262018 : 0x000000);
+    });
+    paintHalos();
+    dirtyFlag = true;
+  }
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  const shown = function (o) { for (; o; o = o.parent) if (!o.visible) return false; return true; };
+  function pick(ev) {
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    const live = wires.filter(shown);
+    const hit = ray.intersectObjects(live, false)[0];
+    return hit ? hit.object.userData.link : null;
+  }
+  function showTip(id, ev) {
+    if (!id) { tipEl.hidden = true; return; }
+    const l = LINKS[id];
+    tipEl.innerHTML = '<b>' + l.title + '</b><span class="pins">' + l.pins + '</span>' + l.what;
+    tipEl.hidden = false;
+    const r = view.getBoundingClientRect();
+    const x = Math.min(ev.clientX - r.left + 14, r.width - tipEl.offsetWidth - 8);
+    const y = Math.min(ev.clientY - r.top + 14, r.height - tipEl.offsetHeight - 8);
+    tipEl.style.transform = 'translate(' + Math.max(8, x) + 'px,' + Math.max(8, y) + 'px)';
+  }
+  let dragging = false, downAt = null;
+  renderer.domElement.addEventListener('pointerdown', function (e) { dragging = true; downAt = [e.clientX, e.clientY]; });
+  window.addEventListener('pointerup', function (e) {
+    dragging = false;
+    if (downAt && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 5 && e.target === renderer.domElement) {
+      const id = pick(e);
+      pinned = id && pinned !== id ? id : null;
+      highlight(pinned); showTip(pinned, e);
+    }
+    downAt = null;
+  });
+  renderer.domElement.addEventListener('pointermove', function (e) {
+    if (dragging || e.pointerType === 'touch') return;
+    const id = pick(e);
+    highlight(id || pinned); showTip(id, e);
+  });
+  renderer.domElement.addEventListener('pointerleave', function () { tipEl.hidden = true; highlight(pinned); });
+
+  /* ---------- camera ---------- */
+  const VIEWS = {
+    bench: { p: V(-62, 215, 290), t: V(2, 6, 42) },
+    cable: { p: V(-18, 135, 170), t: V(4, 2, 56) },
+    atom: { p: V(-92, 78, 150), t: V(-20, 4, 68) },
+    terms: { p: V(52, 72, 112), t: V(30, 8, 40) },
+    amp: { p: V(104, 62, 58), t: V(38, 24, -20) }
+  };
+  const fitted = function (v) {
+    const a = Math.max(0.3, view.clientWidth / Math.max(1, view.clientHeight));
+    const f = Math.pow(Math.max(1, 1.5 / a), 0.85);
+    return { p: v.t.clone().add(v.p.clone().sub(v.t).multiplyScalar(f)), t: v.t };
+  };
+  let tween = null;
+  function flyTo(name, instant) {
+    document.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.view === name)); });
+    const f = fitted(VIEWS[name]);
+    if (instant || reduced) { camera.position.copy(f.p); controls.target.copy(f.t); controls.update(); tween = null; dirtyFlag = true; return; }
+    tween = { t0: performance.now(), p0: camera.position.clone(), q0: controls.target.clone(), p1: f.p, q1: f.t };
+  }
+  controls.addEventListener('start', function () {
+    tween = null;
+    document.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+  });
+  controls.addEventListener('change', function () { dirtyFlag = true; });
+
+  /* ---------- steps ---------- */
+  function setStep3D(k, animate) {
+    const T = target(k);
+    drvFrom = P.du >= 0.5 ? drvTo : drvFrom;
+    drvTo = T.drv;
+    kNow = k; cut = k >= 2; attach = resOn && k >= 5;
+    if (!animate) {
+      KEYS.forEach(function (key) { P[key] = T[key]; });
+      drvFrom = drvTo; P.du = 1; P.tug = 0; anim = null;
+      apply();
+      flyTo(STEPS[k - 1].v, true);
+      if (playing) queueNext(3800);
+      return;
+    }
+    const from = {}; KEYS.forEach(function (key) { from[key] = P[key]; });
+    from.du = drvFrom === drvTo ? 1 : 0; from.tug = 0;
+    const to = {}; KEYS.forEach(function (key) { to[key] = T[key]; });
+    if (k === 6) to.tug = 1;
+    anim = { k: k, t0: performance.now() + 200, dur: DUR[k], from: from, to: to };
+    KEYS.forEach(function (key) { P[key] = from[key]; });
+    apply();
+    flyTo(STEPS[k - 1].v);
+  }
+  function runAnim(now) {
+    if (!anim) return;
+    const t = Math.max(0, (now - anim.t0) / anim.dur), W = WIN[anim.k] || {};
+    KEYS.forEach(function (key) {
+      const w = W[key] || [0, 1], u = clamp01((t - w[0]) / (w[1] - w[0]));
+      P[key] = anim.from[key] + (anim.to[key] - anim.from[key]) * (key === 'tug' ? u : ease(u));
+    });
+    apply();
+    if (t >= 1) {
+      anim = null; P.tug = 0; apply();
+      if (playing) {
+        if (stepK < NSTEP) playTimer = setTimeout(function () { if (playing) setStep(stepK + 1, true); }, 1100);
+        else setPlaying(false);
+      }
+    }
+  }
+
+  /* ---------- size and loop ---------- */
+  function resize() {
+    const w = view.clientWidth, h = view.clientHeight;
+    renderer.setSize(w, h, false); camera.aspect = w / Math.max(1, h); camera.updateProjectionMatrix(); dirtyFlag = true;
+  }
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(view); else window.addEventListener('resize', resize);
+  resize();
+
+  const pv = V();
+  function placeTags() {
+    const w = view.clientWidth, h = view.clientHeight;
+    for (let i = 0; i < tagList.length; i++) {
+      const t = tagList[i];
+      let vis = (!t.pin || pinLabels) && (!t.when || t.when()) && (!t.obj || shown(t.obj));
+      if (vis) {
+        pv.copy(t.get(pv));
+        if (t.near && camera.position.distanceTo(pv) > t.near) vis = false;
+        pv.project(camera);
+        vis = vis && pv.z < 1 && Math.abs(pv.x) < 1.05 && Math.abs(pv.y) < 1.05;
+        t.x = (pv.x + 1) / 2 * w; t.y = (1 - pv.y) / 2 * h;
+      }
+      if (t.el.hidden === vis) t.el.hidden = !vis;
+      if (vis) t.el.style.transform = 'translate(' + t.x.toFixed(1) + 'px,' + t.y.toFixed(1) + 'px) translate(-50%, -100%)';
+    }
+  }
+  let visible = true;
+  if (window.IntersectionObserver) new IntersectionObserver(function (en) { visible = en[0].isIntersecting; if (visible) dirtyFlag = true; }).observe(view);
+  function loop(now) {
+    requestAnimationFrame(loop);
+    if (tween) {
+      const k = Math.min(1, (now - tween.t0) / 1000), e = ease(k);
+      camera.position.lerpVectors(tween.p0, tween.p1, e); controls.target.lerpVectors(tween.q0, tween.q1, e);
+      if (k >= 1) tween = null;
+      dirtyFlag = true;
+    }
+    runAnim(now);
+    controls.update();
+    if (!dirtyFlag || !visible) return;
+    dirtyFlag = false;
+    renderer.render(scene, camera);
+    placeTags();
+  }
+  requestAnimationFrame(loop);
+
+  return {
+    setStep: setStep3D,
+    highlight: highlight3D,
+    go: function (name) { flyTo(name); },
+    setRes: function () { attach = resOn && kNow >= 5; apply(); },
+    dirty: function () { dirtyFlag = true; }
+  };
+}
+
+try { S = init(); } catch (e) { S = null; if (window.console) console.error(e); }
+if (!S) noGL();
+setStep(NSTEP, false);
+})();
+</script>
+</body>
+</html>

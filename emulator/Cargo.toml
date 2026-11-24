@@ -1,0 +1,18 @@
+[package]
+name = "arcam-radia-emulator"
+description = "A virtual Arcam Radia A25 on a TCP socket, for the firmware's emulator."
+publish = false
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "virtual-amp"
+path = "src/main.rs"
+
+[dependencies]
+arcam-radia = { path = "../core" }
+
+[lints]
+workspace = true

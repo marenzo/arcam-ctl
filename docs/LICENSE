@@ -1,0 +1,6 @@
+Project-authored documentation, measurements, captures and the original wiring
+scene are licensed under Creative Commons Attribution 4.0 International.
+https://creativecommons.org/licenses/by/4.0/
+
+docs/wiring/three-r128 contains three.js r128 and OrbitControls from the
+three 0.128.0 distribution. Their MIT license is in wiring/three-r128/LICENSE.

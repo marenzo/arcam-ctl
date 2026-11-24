@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    name: check (fmt, clippy, test, doc)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # The toolchain rust-toolchain.toml names.
+      - run: rustup toolchain install
+      - run: ./check.sh
+      # The crate packages and builds on its own, as crates.io would take it.
+      - run: cargo publish -p arcam-radia --dry-run
+
+  typos:
+    name: typos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: crate-ci/typos@4c8b7f51ca60df14e3c5ca82770dfbbe6c3dae85 # v1.52.0
+
+  firmware:
+    name: firmware (container build, clippy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: build
+        run: ./firmware/build.sh --clippy
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: arcam-radia-esp32-control
+          path: |
+            dist/arcam-radia-esp32-control.bin
+            dist/arcam-radia-esp32-control-app.bin
+            dist/firmware-notices.tar.gz
+          if-no-files-found: error
+
+  emulator:
+    name: emulator (the QEMU image against the virtual amplifier)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: build the QEMU image
+        run: ./firmware/build.sh --clippy --qemu
+      - name: run the emulator round
+        run: ./emulator/test.sh
+
+  publish:
+    name: publish checked firmware
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [check, typos, firmware, emulator]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: verify tag and package versions
+        run: |
+          python3 - <<'PYTHON'
+          import os, tomllib
+          from pathlib import Path
+          root = tomllib.loads(Path("Cargo.toml").read_text())["workspace"]["package"]["version"]
+          app = tomllib.loads(Path("firmware/Cargo.toml").read_text())["package"]["version"]
+          tag = os.environ["GITHUB_REF_NAME"]
+          if root != app or tag != f"v{app}":
+              raise SystemExit(f"Tag {tag}, workspace {root}, firmware {app} must agree")
+          PYTHON
+      - name: publish binaries, checksums and notices
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download "$GITHUB_RUN_ID" --name arcam-radia-esp32-control --dir dist
+          cd dist
+          assets=(arcam-radia-esp32-control.bin arcam-radia-esp32-control-app.bin firmware-notices.tar.gz)
+          sha256sum "${assets[@]}" > SHA256SUMS
+          # A re-run, or a release drafted by hand, gets its assets replaced.
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 ||
+            gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" \
+              --notes "USB: flash the merged .bin at 0x0. OTA: upload the -app.bin. Verify downloads with SHA256SUMS. See [the changelog](https://github.com/$GITHUB_REPOSITORY/blob/$GITHUB_REF_NAME/CHANGELOG.md)."
+          gh release upload "$GITHUB_REF_NAME" "${assets[@]}" SHA256SUMS --clobber

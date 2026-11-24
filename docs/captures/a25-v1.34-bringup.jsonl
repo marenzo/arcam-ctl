@@ -1,0 +1,136 @@
+{"kind": "rx", "t_ms": 0, "hex": "fe"}
+{"kind": "burst", "t_ms": 2199694, "label": "probe3 power query 0 hold 150", "tx_hex": "2100f00d", "hold_ms": 150, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2200444, "label": "probe3 power query 1 hold 150", "tx_hex": "2100f00d", "hold_ms": 150, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2201434, "label": "probe3 power query 2 hold 300", "tx_hex": "2100f00d", "hold_ms": 300, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2202418, "label": "probe3 power query 3 hold 300", "tx_hex": "2100f00d", "hold_ms": 300, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2203169, "label": "probe3 power query 4 hold 80", "tx_hex": "2100f00d", "hold_ms": 80, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2203800, "label": "probe3 power query 5 hold 80", "tx_hex": "2100f00d", "hold_ms": 80, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2204557, "label": "probe3 volume try 1", "tx_hex": "210df00d", "hold_ms": 150, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2205264, "label": "probe3 mute try 1", "tx_hex": "210ef00d", "hold_ms": 150, "rx_hex": "210e00010d"}
+{"kind": "burst", "t_ms": 2206014, "label": "probe3 source try 1", "tx_hex": "211df00d", "hold_ms": 150, "rx_hex": "211d00070d"}
+{"kind": "burst", "t_ms": 2206802, "label": "probe3 model try 1", "tx_hex": "215ef00d", "hold_ms": 150, "rx_hex": "215e00030d"}
+{"kind": "burst", "t_ms": 2238340, "label": "state power try 1", "tx_hex": "2100f00d", "hold_ms": 150, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2238987, "label": "state volume try 1", "tx_hex": "210df00d", "hold_ms": 150, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2239578, "label": "state mute try 1", "tx_hex": "210ef00d", "hold_ms": 150, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2240217, "label": "state mute try 2", "tx_hex": "210ef00d", "hold_ms": 150, "rx_hex": "210e00010d"}
+{"kind": "burst", "t_ms": 2240858, "label": "state source try 1", "tx_hex": "211df00d", "hold_ms": 150, "rx_hex": "211d00070d"}
+{"kind": "burst", "t_ms": 2241389, "label": "latency hold 60", "tx_hex": "2100f00d", "hold_ms": 60, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2241971, "label": "latency hold 60", "tx_hex": "2100f00d", "hold_ms": 60, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2242494, "label": "latency hold 60", "tx_hex": "2100f00d", "hold_ms": 60, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2243018, "label": "latency hold 60", "tx_hex": "2100f00d", "hold_ms": 60, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2243595, "label": "latency hold 60", "tx_hex": "2100f00d", "hold_ms": 60, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2244186, "label": "latency hold 40", "tx_hex": "2100f00d", "hold_ms": 40, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2244662, "label": "latency hold 40", "tx_hex": "2100f00d", "hold_ms": 40, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2245188, "label": "latency hold 40", "tx_hex": "2100f00d", "hold_ms": 40, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2245720, "label": "latency hold 40", "tx_hex": "2100f00d", "hold_ms": 40, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2246193, "label": "latency hold 40", "tx_hex": "2100f00d", "hold_ms": 40, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2246727, "label": "latency hold 25", "tx_hex": "2100f00d", "hold_ms": 25, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2247312, "label": "latency hold 25", "tx_hex": "2100f00d", "hold_ms": 25, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2247798, "label": "latency hold 25", "tx_hex": "2100f00d", "hold_ms": 25, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2248273, "label": "latency hold 25", "tx_hex": "2100f00d", "hold_ms": 25, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2248802, "label": "latency hold 25", "tx_hex": "2100f00d", "hold_ms": 25, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2249385, "label": "latency hold 15", "tx_hex": "2100f00d", "hold_ms": 15, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2249964, "label": "latency hold 15", "tx_hex": "2100f00d", "hold_ms": 15, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2250550, "label": "latency hold 15", "tx_hex": "2100f00d", "hold_ms": 15, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2251139, "label": "latency hold 15", "tx_hex": "2100f00d", "hold_ms": 15, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2251718, "label": "latency hold 15", "tx_hex": "2100f00d", "hold_ms": 15, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2252200, "label": "latency hold 8", "tx_hex": "2100f00d", "hold_ms": 8, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2252771, "label": "latency hold 8", "tx_hex": "2100f00d", "hold_ms": 8, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2253252, "label": "latency hold 8", "tx_hex": "2100f00d", "hold_ms": 8, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2253842, "label": "latency hold 8", "tx_hex": "2100f00d", "hold_ms": 8, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2254370, "label": "latency hold 8", "tx_hex": "2100f00d", "hold_ms": 8, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2254842, "label": "latency hold 4", "tx_hex": "2100f00d", "hold_ms": 4, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2255312, "label": "latency hold 4", "tx_hex": "2100f00d", "hold_ms": 4, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2255785, "label": "latency hold 4", "tx_hex": "2100f00d", "hold_ms": 4, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2256260, "label": "latency hold 4", "tx_hex": "2100f00d", "hold_ms": 4, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2256742, "label": "latency hold 4", "tx_hex": "2100f00d", "hold_ms": 4, "rx_hex": "210000"}
+{"kind": "burst", "t_ms": 2257318, "label": "loss 0", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2257851, "label": "loss 1", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2258382, "label": "loss 2", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2258912, "label": "loss 3", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2259502, "label": "loss 4", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2260035, "label": "loss 5", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2260571, "label": "loss 6", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2261107, "label": "loss 7", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2261688, "label": "loss 8", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2262228, "label": "loss 9", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2262758, "label": "loss 10", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2263294, "label": "loss 11", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2263837, "label": "loss 12", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2264425, "label": "loss 13", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2264960, "label": "loss 14", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2265494, "label": "loss 15", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2266033, "label": "loss 16", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2266619, "label": "loss 17", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2267203, "label": "loss 18", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2267735, "label": "loss 19", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2268276, "label": "loss 20", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2268805, "label": "loss 21", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2269392, "label": "loss 22", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2269918, "label": "loss 23", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2270493, "label": "loss 24", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2271025, "label": "loss 25", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2271563, "label": "loss 26", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2272089, "label": "loss 27", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2272676, "label": "loss 28", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2273217, "label": "loss 29", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2273758, "label": "loss 30", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2274321, "label": "loss 31", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2274860, "label": "loss 32", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2275404, "label": "loss 33", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2275926, "label": "loss 34", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2276507, "label": "loss 35", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2277035, "label": "loss 36", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2277557, "label": "loss 37", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2278134, "label": "loss 38", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2278663, "label": "loss 39", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2279253, "label": "loss 40", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2279785, "label": "loss 41", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2280311, "label": "loss 42", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2280889, "label": "loss 43", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2281417, "label": "loss 44", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2281956, "label": "loss 45", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2282483, "label": "loss 46", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2283077, "label": "loss 47", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2283616, "label": "loss 48", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2284147, "label": "loss 49", "tx_hex": "210df00d", "hold_ms": 80, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2298761, "label": "before volume try 1", "tx_hex": "210df00d", "hold_ms": 150, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2299399, "label": "before mute try 1", "tx_hex": "210ef00d", "hold_ms": 150, "rx_hex": "210e00010d"}
+{"kind": "burst", "t_ms": 2299977, "label": "volume down try 1", "tx_hex": "210df20d", "hold_ms": 150, "rx_hex": "210d003a0d"}
+{"kind": "burst", "t_ms": 2300606, "label": "volume after down try 1", "tx_hex": "210df00d", "hold_ms": 150, "rx_hex": "210d003a0d"}
+{"kind": "burst", "t_ms": 2301246, "label": "volume up try 1", "tx_hex": "210df10d", "hold_ms": 150, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2301835, "label": "volume after up try 1", "tx_hex": "210df00d", "hold_ms": 150, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2302474, "label": "mute on try 1", "tx_hex": "210e000d", "hold_ms": 150, "rx_hex": "210e00000d"}
+{"kind": "burst", "t_ms": 2303107, "label": "mute read try 1", "tx_hex": "210ef00d", "hold_ms": 150, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2303734, "label": "mute read try 2", "tx_hex": "210ef00d", "hold_ms": 150, "rx_hex": "210e00000d"}
+{"kind": "burst", "t_ms": 2304312, "label": "mute off try 1", "tx_hex": "210e010d", "hold_ms": 150, "rx_hex": "210e00010d"}
+{"kind": "burst", "t_ms": 2304958, "label": "mute read 2 try 1", "tx_hex": "210ef00d", "hold_ms": 150, "rx_hex": "210e00010d"}
+{"kind": "burst", "t_ms": 2305542, "label": "end volume try 1", "tx_hex": "210df00d", "hold_ms": 150, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2306186, "label": "end mute try 1", "tx_hex": "210ef00d", "hold_ms": 150, "rx_hex": "210e00010d"}
+{"kind": "burst", "t_ms": 2322917, "label": "pre-standby power try 1", "tx_hex": "2100f00d", "hold_ms": 150, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2323559, "label": "pre-standby volume try 1", "tx_hex": "210df00d", "hold_ms": 150, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2324135, "label": "pre-standby mute try 1", "tx_hex": "210ef00d", "hold_ms": 150, "rx_hex": "210e00010d"}
+{"kind": "burst", "t_ms": 2324775, "label": "pre-standby source try 1", "tx_hex": "211df00d", "hold_ms": 150, "rx_hex": "211d00070d"}
+{"kind": "burst", "t_ms": 2325414, "label": "standby request try 1", "tx_hex": "2100000d", "hold_ms": 150, "rx_hex": "210000000d"}
+{"kind": "burst", "t_ms": 2326477, "label": "standby poll 0", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": "210000000d"}
+{"kind": "burst", "t_ms": 2327386, "label": "standby poll 1", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": "210000000d"}
+{"kind": "burst", "t_ms": 2328344, "label": "standby poll 2", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": "210000000d"}
+{"kind": "burst", "t_ms": 2329362, "label": "standby poll 3", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": "210000000d"}
+{"kind": "burst", "t_ms": 2330319, "label": "standby poll 4", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": "210000000d"}
+{"kind": "burst", "t_ms": 2331337, "label": "standby poll 5", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": "210000000d"}
+{"kind": "burst", "t_ms": 2332309, "label": "standby poll 6", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": "210000000d"}
+{"kind": "burst", "t_ms": 2333275, "label": "standby poll 7", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": "210000000d"}
+{"kind": "burst", "t_ms": 2334270, "label": "standby poll 8", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": "210000000d"}
+{"kind": "burst", "t_ms": 2335234, "label": "standby poll 9", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": "210000000d"}
+{"kind": "burst", "t_ms": 2336599, "label": "standby volume try 1", "tx_hex": "210df00d", "hold_ms": 150, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2337251, "label": "wake request try 1", "tx_hex": "2100010d", "hold_ms": 150, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2338110, "label": "wake poll 0", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2338851, "label": "wake poll 1", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2339651, "label": "wake poll 2", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2340450, "label": "wake poll 3", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2341194, "label": "wake poll 4", "tx_hex": "2100f00d", "hold_ms": 100, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2342745, "label": "post-wake power try 1", "tx_hex": "2100f00d", "hold_ms": 150, "rx_hex": "210000010d"}
+{"kind": "burst", "t_ms": 2343385, "label": "post-wake volume try 1", "tx_hex": "210df00d", "hold_ms": 150, "rx_hex": "210d003b0d"}
+{"kind": "burst", "t_ms": 2343970, "label": "post-wake mute try 1", "tx_hex": "210ef00d", "hold_ms": 150, "rx_hex": "210e00010d"}
+{"kind": "burst", "t_ms": 2344606, "label": "post-wake source try 1", "tx_hex": "211df00d", "hold_ms": 150, "rx_hex": ""}
+{"kind": "burst", "t_ms": 2345242, "label": "post-wake source try 2", "tx_hex": "211df00d", "hold_ms": 150, "rx_hex": "211d00070d"}

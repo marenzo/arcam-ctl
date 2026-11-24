@@ -1,0 +1,13 @@
+# 4 MB flash, two app slots for OTA (firmware/src/ota.rs).
+# - A USB update writes the merged image from 0x0 without erasing first. It
+#   ends inside ota_0, before nvs, so Wi-Fi and settings are kept; and it
+#   writes 0xFF over the gap otadata lies in, which resets it: the board
+#   boots ota_0, the app just flashed.
+# - phy_init stays first: espflash puts the table 0x1000 below the first
+#   partition, at 0x8000, where the bootloader reads it.
+# Name,   Type, SubType, Offset,   Size
+phy_init, data, phy,     0x9000,   0x1000
+otadata,  data, ota,     0xD000,   0x2000
+ota_0,    app,  ota_0,   0x10000,  0x1F0000
+ota_1,    app,  ota_1,   0x200000, 0x1F0000
+nvs,      data, nvs,     0x3F0000, 0x10000

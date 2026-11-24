@@ -1,0 +1,7 @@
+[files]
+extend-exclude = ["docs/captures/*.jsonl", "docs/wiring/three-r128/**"]
+
+# Names, not typos: the MQTT broker, and three.js's material property.
+[default.extend-words]
+mosquitto = "mosquitto"
+metalness = "metalness"

@@ -1,0 +1,49 @@
+# The ESP32 app (M5 Atom Lite). Its own Cargo project for the Xtensa target,
+# outside the host workspace. Built in a container: firmware/build.sh.
+[package]
+name = "arcam-radia-firmware"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT"
+publish = false
+
+[[bin]]
+name = "arcam-radia"
+path = "src/main.rs"
+harness = false
+test = false
+
+[features]
+# The image for QEMU (firmware/build.sh --qemu, emulator/README.md):
+# the network on the emulator's Ethernet instead of Wi-Fi, no Improv.
+qemu = []
+
+[dependencies]
+esp-idf-svc = "=0.53.0"
+serde = "1"
+serde_json = { version = "1", features = ["raw_value"] }
+log = { version = "0.4", default-features = false }
+arcam-radia = { path = "../core" }
+
+[build-dependencies]
+embuild = { version = "=0.33.7", features = ["espidf"] }
+
+# ESP-IDF v6.1 does not bundle the MQTT client: it is a managed component.
+[[package.metadata.esp-idf-sys.extra_components]]
+remote_component = { name = "espressif/mqtt", version = "1.1.0" }
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+
+# A debug build does not fit the ESP32's DRAM: build with --release.
+[profile.release]
+opt-level = "s"
+lto = "thin"
+codegen-units = 1
+
+[profile.dev]
+opt-level = "z"
+
+# Not a member of the host workspace one level up.
+[workspace]

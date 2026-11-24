@@ -1,0 +1,53 @@
+name: Compatibility report
+description: How the bridge behaved with your amplifier, working or not.
+title: "Compatibility: <model> <firmware>"
+labels: [compatibility]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Redact SSIDs, private addresses, usernames, device identifiers and
+        credentials from logs. Do not attach the manufacturer's firmware.
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      placeholder: Radia A15
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Amplifier firmware
+      description: From the amplifier's menu.
+    validations:
+      required: true
+  - type: textarea
+    id: wiring
+    attributes:
+      label: Wiring
+      description: >-
+        Adapter terminals, cable straight or crossed, resistor, board. Say
+        whether the terminals read differently from
+        docs/hardware.md#identify-the-terminals.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Result
+      description: What worked, what did not, and whether the amplifier sent anything unasked.
+    validations:
+      required: true
+  - type: textarea
+    id: state
+    attributes:
+      label: GET /api/state
+      description: The JSON. The `model` field matters most for a model other than the A25.
+      render: json
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: The device's log around the problem, or captured exchanges.
+      render: text

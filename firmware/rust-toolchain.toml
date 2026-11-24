@@ -1,0 +1,3 @@
+# The Xtensa fork of Rust, installed by espup (the container image has it).
+[toolchain]
+channel = "esp"

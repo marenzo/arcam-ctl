@@ -1,0 +1,27 @@
+[workspace]
+resolver = "3"
+members = ["core", "emulator"]
+# The firmware is its own Cargo project for the Xtensa target; it repeats
+# these values.
+exclude = ["firmware"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+# The ESP toolchain, the oldest that builds the core (in the firmware).
+rust-version = "1.95"
+license = "MIT"
+repository = "https://github.com/marenzo/arcam-radia-esp32-control"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+# Most functions are pure accessors; `#[must_use]` on each would be noise.
+# The one whose result must not be dropped, `Link::feed`, carries it explicitly.
+must_use_candidate = "allow"
+# `line` and `link`, `rx` and `tx`, `lost` and `loss`: the protocol's own words,
+# side by side in the tests.
+similar_names = "allow"
