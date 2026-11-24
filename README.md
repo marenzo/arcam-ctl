@@ -1,5 +1,12 @@
 # Arcam Radia ESP32 Control
 
+[![CI](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml)
+[![crates.io](https://img.shields.io/crates/v/arcam-radia.svg)](https://crates.io/crates/arcam-radia)
+[![docs.rs](https://img.shields.io/docsrs/arcam-radia)](https://docs.rs/arcam-radia)
+[![License: MIT and CC BY 4.0](https://img.shields.io/badge/license-MIT%20%2B%20CC%20BY%204.0-blue.svg)](#license)
+[![Home Assistant: MQTT discovery](https://img.shields.io/badge/Home%20Assistant-MQTT%20discovery-41BDF5?logo=homeassistant&logoColor=white)](docs/integration.md)
+[![ESP32](https://img.shields.io/badge/ESP32-original%20chip-E7352C?logo=espressif&logoColor=white)](docs/hardware.md#parts)
+
 Turn your Arcam Radia A25 on and off, set the volume, mute it and switch
 inputs from Home Assistant or any HTTP client, using a cheap ESP32 board
 plugged into the amplifier's CONTROL jack.

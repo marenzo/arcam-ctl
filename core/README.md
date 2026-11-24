@@ -1,5 +1,11 @@
 # arcam-radia
 
+[![crates.io](https://img.shields.io/crates/v/arcam-radia.svg)](https://crates.io/crates/arcam-radia)
+[![docs.rs](https://img.shields.io/docsrs/arcam-radia)](https://docs.rs/arcam-radia)
+[![CI](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml)
+[![no_std](https://img.shields.io/badge/no__std-yes-success.svg)](https://docs.rust-embedded.org/book/intro/no-std.html)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/marenzo/arcam-radia-esp32-control/blob/main/core/LICENSE)
+
 A Rust library for the serial protocol of the Arcam Radia A25's CONTROL jack,
 the RJ12 port on the back that Arcam does not document. It is `no_std`, has
 no dependencies, never allocates and does no I/O. You bring the UART and
