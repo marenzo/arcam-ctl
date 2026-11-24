@@ -8,8 +8,8 @@ use std::sync::atomic::Ordering::Relaxed;
 
 use esp_idf_svc::sys;
 
-use arcam_radia::poll::Phase;
-use arcam_radia::state::State;
+use arcam_ctl::poll::Phase;
+use arcam_ctl::state::State;
 
 use crate::amp::Bridge;
 use crate::api::{Condition, Snapshot};

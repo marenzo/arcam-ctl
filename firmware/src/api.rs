@@ -3,9 +3,9 @@
 //! diagnostics as JSON. [`crate::amp`] carries the commands; this module
 //! only names them.
 
-use arcam_radia::policy::{Query, Request, Select, Volume};
-use arcam_radia::state::State;
-use arcam_radia::table::{Mute, Power, Reply, Source};
+use arcam_ctl::policy::{Query, Request, Select, Volume};
+use arcam_ctl::state::State;
+use arcam_ctl::table::{Mute, Power, Reply, Source};
 
 use crate::json;
 use crate::metrics::Replies;

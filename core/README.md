@@ -1,7 +1,7 @@
-# arcam-radia
+# arcam-ctl
 
-[![crates.io](https://img.shields.io/crates/v/arcam-radia.svg)](https://crates.io/crates/arcam-radia)
-[![docs.rs](https://img.shields.io/docsrs/arcam-radia)](https://docs.rs/arcam-radia)
+[![crates.io](https://img.shields.io/crates/v/arcam-ctl.svg)](https://crates.io/crates/arcam-ctl)
+[![docs.rs](https://img.shields.io/docsrs/arcam-ctl)](https://docs.rs/arcam-ctl)
 [![CI](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml)
 [![no_std](https://img.shields.io/badge/no__std-yes-success.svg)](https://docs.rust-embedded.org/book/intro/no-std.html)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/marenzo/arcam-radia-esp32-control/blob/main/core/LICENSE)
@@ -12,7 +12,7 @@ no dependencies, never allocates and does no I/O. You bring the UART and
 the clock, and it gives you the bytes to send and the facts that come back.
 
 This is an unofficial, independent interoperability project. It is not made,
-supported or endorsed by Arcam.
+supported or endorsed by Arcam or Harman.
 
 ## What is in it
 
@@ -29,7 +29,7 @@ supported or endorsed by Arcam.
   20-minute auto-standby.
 
 ```rust
-use arcam_radia::policy::{Policy, Request, Volume};
+use arcam_ctl::policy::{Policy, Request, Volume};
 
 let policy = Policy { volume_max: 60 };
 let wire = policy.check(Request::Volume(Volume::Set(40)), None).unwrap();
@@ -51,5 +51,7 @@ The ESP32 firmware that uses this crate is in the same
 
 ## License
 
-MIT. Arcam and Radia are trademarks of their respective owners. Their use
-here only describes compatibility.
+MIT. ARCAM and Radia are trademarks of Harman International Industries or its
+affiliates, used here only to identify the amplifier this project works
+with. This project is not affiliated with, endorsed or sponsored by Arcam
+or Harman.

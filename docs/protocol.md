@@ -195,29 +195,12 @@ bench reports in later sessions, not in this capture.
 The analysed build is Arcam's A25 V1.34 download,
 <https://www.arcam.co.uk/ugc/tor/A25/A25%20Software%20V1.34/ARCAM%20A25%20software_V1.34.zip>
 (`A25.bin`, sha256
-`f8d6e080eb24d84ffcc971abedf420e786e07593c147329703a35e3487d4bbcf`), an
-STM32F4 application image based at `0x08020000`. The addresses below are
-function entry points in that image and mean nothing for any other build.
-This repository contains none of the firmware.
-
-| Claim | Functions |
-|---|---|
-| UART: USART3, PB10/PB11, 19200 baud | `08026c78`, `08026e54` |
-| Receive buffer, filled by the interrupt | `0802b718`, `08029838` |
-| The 50 ms parser task | `0803dfb4`, `0803df4c`, `08029850` |
-| Framing and dispatch | `08029850`, `080293a8` |
-| Power | `08022e2c` |
-| Volume set, step up, step down | `08022c8c`, `08035e30`, `08035d2c` |
-| Mute on, off | `0802c12c`, `0802c0f0` |
-| Source select and its codes | `08034550`, `0802ae2c`, `08039620`, `080299e0` |
-| No Bluetooth while a sink | `0803651c` |
-| Model | `08029970` |
-| DAC filter (`61`) | `0803661c`, `08026430`, `08029930` |
-| Unsolicited frames | `08029744` |
-| Power-up burst; a wake clears mute | `0803a29c` |
-| `bt rst` | `08029908` |
-| Auto-standby timer | `08020ec8` |
-| Its restarts: audio, keys, frames | `08036750`, `08027394`, `080236ec` |
+`f8d6e080eb24d84ffcc971abedf420e786e07593c147329703a35e3487d4bbcf`). It was
+analysed only to make an independently written program work with the A25,
+and this page publishes only what that needs: the wire protocol and how the
+amplifier behaves on it. This repository contains none of Arcam's software,
+and no addresses, disassembly or code from it. Anyone with the download can
+check each **firmware** claim against it.
 
 ## How it was found
 

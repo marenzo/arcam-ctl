@@ -43,10 +43,11 @@ Use these sources, from strongest to weakest:
    the model byte.
 3. **firmware**: Arcam's public download for that model. Repeat the A25
    method in `docs/protocol.md#how-it-was-found`: find the UART set to
-   19200, the 50 ms parser task, the dispatch on the command byte and each handler. Record the
-   download URL, the image's sha256, its base address and the function entry
-   points. Addresses from the A25 build do not apply to another build.
-   Never commit the image, or any part of it, to the repository.
+   19200, the 50 ms parser task, the dispatch on the command byte and each
+   handler. Record the download URL and the image's sha256 in
+   `docs/protocol.md#firmware`. Publish only what interoperability needs:
+   the wire protocol and its behavior, never function addresses,
+   disassembly or any part of the image.
 
 On hardware, follow `docs/hardware.md#identify-the-terminals` before you drive
 any pin. Start with queries only (`F0`). Never send the power toggle or `61`
@@ -93,8 +94,8 @@ from there.
 - `docs/protocol.md`: add a short section for each model with its own rows
   and their basis. Leave the A25 tables untouched. Add the model's unknowns
   to "Open".
-- `docs/protocol.md#firmware`: add an evidence index for the new firmware
-  build. Remove the model from "Open" once its questions are answered.
+- `docs/protocol.md#firmware`: add the new build's download URL and
+  sha256. Remove the model from "Open" once its questions are answered.
 - `docs/integration.md`: per-model source names or select options are a
   public contract change, so record them in `CHANGELOG.md`.
 - `docs/hardware.md`: only for contacts or levels that were measured to

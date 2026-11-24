@@ -36,14 +36,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
-name = "arcam-radia"
-version = "0.1.0"
+name = "arcam-ctl"
+version = "0.1.1"
 
 [[package]]
 name = "arcam-radia-firmware"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
- "arcam-radia",
+ "arcam-ctl",
  "embuild",
  "esp-idf-svc",
  "log",

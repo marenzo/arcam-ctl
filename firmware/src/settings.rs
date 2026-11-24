@@ -4,8 +4,8 @@
 //! is read; a bad one is logged and its default used. Wi-Fi credentials are
 //! not here: ESP-IDF's Wi-Fi driver keeps them in nvs itself.
 
-use arcam_radia::poll::Spec;
-use arcam_radia::table::VOLUME_TOP;
+use arcam_ctl::poll::Spec;
+use arcam_ctl::table::VOLUME_TOP;
 use esp_idf_svc::nvs::{EspDefaultNvsPartition, EspNvs, NvsDefault};
 use esp_idf_svc::sys::EspError;
 

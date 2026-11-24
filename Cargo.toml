@@ -6,7 +6,7 @@ members = ["core", "emulator"]
 exclude = ["firmware"]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 # The ESP toolchain, the oldest that builds the core (in the firmware).
 rust-version = "1.95"

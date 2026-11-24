@@ -1,6 +1,6 @@
 [package]
-name = "arcam-radia"
-description = "An unofficial, independent library for the serial protocol of the Arcam Radia A25's CONTROL jack: framing, command table, send policy and a burst-mode link. no_std, no dependencies."
+name = "arcam-ctl"
+description = "An unofficial, independent library for the serial protocol of the Arcam Radia A25's CONTROL jack: framing, command table, send policy and a burst-mode link. no_std, no dependencies. Not affiliated with Arcam or Harman."
 keywords = ["arcam", "amplifier", "rs232", "no-std", "protocol"]
 categories = ["embedded", "no-std", "hardware-support"]
 version.workspace = true
@@ -9,7 +9,7 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 readme = "README.md"
-documentation = "https://docs.rs/arcam-radia"
+documentation = "https://docs.rs/arcam-ctl"
 # The tests read the A25 capture from ../docs; the package needs only src/.
 include = ["src/**/*.rs", "README.md", "LICENSE", "Cargo.toml"]
 

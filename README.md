@@ -1,8 +1,8 @@
 # Arcam Radia ESP32 Control
 
 [![CI](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/marenzo/arcam-radia-esp32-control/actions/workflows/ci.yml)
-[![crates.io](https://img.shields.io/crates/v/arcam-radia.svg)](https://crates.io/crates/arcam-radia)
-[![docs.rs](https://img.shields.io/docsrs/arcam-radia)](https://docs.rs/arcam-radia)
+[![crates.io](https://img.shields.io/crates/v/arcam-ctl.svg)](https://crates.io/crates/arcam-ctl)
+[![docs.rs](https://img.shields.io/docsrs/arcam-ctl)](https://docs.rs/arcam-ctl)
 [![License: MIT and CC BY 4.0](https://img.shields.io/badge/license-MIT%20%2B%20CC%20BY%204.0-blue.svg)](#license)
 [![Home Assistant: MQTT discovery](https://img.shields.io/badge/Home%20Assistant-MQTT%20discovery-41BDF5?logo=homeassistant&logoColor=white)](docs/integration.md)
 [![ESP32](https://img.shields.io/badge/ESP32-original%20chip-E7352C?logo=espressif&logoColor=white)](docs/hardware.md#parts)
@@ -13,13 +13,15 @@ plugged into the amplifier's CONTROL jack.
 
 > [!CAUTION]
 > **This is a hobby project. Use it at your own risk.**
-> It is not made, supported or endorsed by Arcam, and it has no affiliation
-> with Arcam or its owners. It talks to your amplifier through a port Arcam
+> It is not made, supported or endorsed by Arcam or Harman, and it has no
+> affiliation with either. It talks to your amplifier through a port Arcam
 > never documented, and the amplifier's signal goes beyond the voltage an
 > ESP32 pin is rated for ([details](#a-word-on-the-risk)). It comes with no
 > warranty of any kind. If it damages your amplifier, your board or anything
-> else, that is your responsibility, not mine. If you are not comfortable with
-> that, don't connect it.
+> else, that is your responsibility, not mine. Arcam's manual marks the
+> CONTROL input for use with Arcam Radia components only, so damage caused by
+> connecting this bridge is unlikely to be covered by Arcam's warranty. If you
+> are not comfortable with that, don't connect it.
 
 ## Why I built this
 
@@ -223,13 +225,14 @@ Arcam software, without guessing and without ever sending an unsafe command.
 - [emulator/](emulator/README.md): a virtual A25 that runs the real firmware
   end to end, with no hardware.
 - [core/](core/README.md): the protocol as a small, dependency-free Rust
-  library, the `arcam-radia` crate.
+  library, the `arcam-ctl` crate.
 - [CHANGELOG.md](CHANGELOG.md): what changed in each release.
 
 ## License
 
 The code is [MIT](LICENSE). The documentation and captures are
 [CC BY 4.0](docs/LICENSE). The bundled 3D viewer has its own terms, listed
-there. This repository contains no Arcam software. Arcam and Radia are
-trademarks of their respective owners. Their use here only describes
-compatibility.
+there. This repository contains no Arcam software. ARCAM and Radia are trademarks of Harman International Industries or its
+affiliates, used here only to identify the amplifier this project works
+with. This project is not affiliated with, endorsed or sponsored by Arcam
+or Harman.

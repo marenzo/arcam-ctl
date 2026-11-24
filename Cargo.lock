@@ -3,12 +3,12 @@
 version = 4
 
 [[package]]
-name = "arcam-radia"
-version = "0.1.0"
+name = "arcam-ctl"
+version = "0.1.1"
 
 [[package]]
 name = "arcam-radia-emulator"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
- "arcam-radia",
+ "arcam-ctl",
 ]

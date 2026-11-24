@@ -22,7 +22,7 @@ jobs:
       - run: rustup toolchain install
       - run: ./check.sh
       # The crate packages and builds on its own, as crates.io would take it.
-      - run: cargo publish -p arcam-radia --dry-run
+      - run: cargo publish -p arcam-ctl --dry-run
 
   typos:
     name: typos

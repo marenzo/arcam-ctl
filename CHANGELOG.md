@@ -4,6 +4,21 @@ Format: [Keep a Changelog](https://keepachangelog.com). Versions follow
 [Semantic Versioning](https://semver.org); before 1.0 anything may change,
 including MQTT topics and the REST API.
 
+## 0.1.1 (2026-11-24)
+
+### Changed
+
+- The protocol library is published as `arcam-ctl`. The 0.1.0 crate,
+  `arcam-radia`, was a name made only of Arcam's marks and has been removed
+  from crates.io. Update a dependency to `arcam-ctl = "0.1.1"` and
+  `use arcam_ctl::…`; the API is unchanged.
+- The README warns that Arcam's warranty is unlikely to cover damage from
+  connecting the bridge, and names Harman as the owner of the ARCAM and
+  Radia marks.
+- `docs/protocol.md` no longer lists function addresses in Arcam's software.
+  It identifies the analysed build by its hash and states that the analysis
+  was only for interoperability.
+
 ## 0.1.0 (2026-11-24)
 
 The first release.

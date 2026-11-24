@@ -43,9 +43,13 @@ and repeats the workspace's package fields. Keep the two in step.
   new file ([format](docs/protocol.md#captures)).
 - Mark every protocol claim with its basis: **seen** (on the jack, in a
   capture), **bench report** (a maintainer observation outside a capture) or
-  **firmware** (read from Arcam's image, with function addresses in
-  [docs/protocol.md](docs/protocol.md#firmware)). An emulator run is
-  not evidence about the amplifier.
+  **firmware** (read from Arcam's image, identified by its hash in
+  [docs/protocol.md](docs/protocol.md#firmware)). An emulator run is not
+  evidence about the amplifier.
+- Arcam's software is analysed only to make this independent program work
+  with the amplifier. Publish what interoperability needs (the wire
+  protocol and its behavior), not the image's internals: no function
+  addresses, disassembly or code from it.
 - In `emulator/`, a behavior no source supports is the most conservative
   choice and is marked `Assumption:`. Check it against the capture when
   possible.
@@ -110,8 +114,8 @@ The workspace and firmware package versions must match the tag (`0.1.0` and
 `v0.1.0`). Date the changelog entry and update the README's status. On a `v*`
 tag, CI waits for the host, spelling, firmware and emulator jobs, then
 publishes the merged image, the OTA image, the notices and `SHA256SUMS`.
-`core/` is also the `arcam-radia` crate. CI dry-runs its publish on every
-push. The maintainer publishes it by hand with `cargo publish -p arcam-radia`
+`core/` is also the `arcam-ctl` crate. CI dry-runs its publish on every
+push. The maintainer publishes it by hand with `cargo publish -p arcam-ctl`
 after the tag. A published version cannot be taken back, only yanked.
 
 ## License

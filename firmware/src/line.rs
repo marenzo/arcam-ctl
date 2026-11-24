@@ -10,8 +10,8 @@
 
 use core::ffi::c_void;
 
-use arcam_radia::frame::Decoder;
-use arcam_radia::link::Burst;
+use arcam_ctl::frame::Decoder;
+use arcam_ctl::link::Burst;
 use esp_idf_svc::sys::{self, EspError, esp};
 
 /// The most one hold keeps; a reply is five bytes.

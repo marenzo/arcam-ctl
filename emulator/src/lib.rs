@@ -10,9 +10,9 @@
 //! Where the documents do not say what the amplifier does, the virtual amp does
 //! the most conservative thing, and the line says `Assumption:`.
 
-use arcam_radia::frame::{END, Frame, REPLY_LEN, REQUEST_LEN, START};
-use arcam_radia::poll::AUTO_STANDBY_MS;
-use arcam_radia::table::{self, Asked, Command, Input, Mute, Power, Reply, Source};
+use arcam_ctl::frame::{END, Frame, REPLY_LEN, REQUEST_LEN, START};
+use arcam_ctl::poll::AUTO_STANDBY_MS;
+use arcam_ctl::table::{self, Asked, Command, Input, Mute, Power, Reply, Source};
 
 /// The amplifier's parser runs every 50 ms (`docs/protocol.md#timing`).
 pub const TASK_MS: u64 = 50;

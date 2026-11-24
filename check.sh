@@ -24,7 +24,7 @@ cargo test --workspace
 echo "==> cargo build, the core for bare metal"
 bare=thumbv7em-none-eabihf
 rustup target list --installed | grep -qx "$bare" || rustup target add "$bare"
-cargo build -p arcam-radia --target "$bare"
+cargo build -p arcam-ctl --target "$bare"
 
 echo "==> cargo doc"
 RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps
